@@ -22,7 +22,7 @@ const mediaItems = [
   {
     id: 2,
     type: "video",
-    src: "https://cdn.pixabay.com/video/2025/06/09/284566_tiny.mp4",
+    src: "https://cdn.pixabay.com/photo/2025/06/03/18/01/urban-fashion-9639853_640.jpg",
     title: "Fashion Editorial",
     artist: "Ike Edeani",
     role: "Photographer",
@@ -97,7 +97,7 @@ export default function Portfolio() {
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-black relative">
+    <div className="h-screen w-full overflow-hidden bg-white text-slate-700 relative">
       {/* Top Carousel */}
       <div className="absolute top-0 left-0 w-full overflow-hidden">
         <div className="flex animate-scroll-left">
@@ -116,7 +116,7 @@ export default function Portfolio() {
                   style={{
                     height: "auto",
                   }}
-                  className="rounded-lg"
+                  className=""
                   sizes="175px"
                 />
                 {item.type === "video" && (
@@ -141,17 +141,17 @@ export default function Portfolio() {
       {/* Center Navigation */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
         <div className="text-center">
-          <h1 className="text-white text-4xl md:text-6xl lg:text-8xl font-light tracking-widest mb-8 opacity-90">
-            FOR YOUR CONSIDERATION
+          <h1 className=" text-2xl md:text-6xl lg:text-8xl font-light tracking-widest mb-8 opacity-90">
+            Dele Kaleef
           </h1>
           <nav className="flex items-center justify-center space-x-12 md:space-x-16">
-            <button className="text-white text-lg md:text-xl font-light tracking-wider hover:opacity-60 transition-opacity duration-300">
+            <button className=" text-lg md:text-xl font-light tracking-wider hover:opacity-60 transition-opacity duration-300">
               ARTISTS
             </button>
-            <button className="text-white text-lg md:text-xl font-light tracking-wider hover:opacity-60 transition-opacity duration-300">
+            <button className=" text-lg md:text-xl font-light tracking-wider hover:opacity-60 transition-opacity duration-300">
               PORTFOLIO
             </button>
-            <button className="text-white text-lg md:text-xl font-light tracking-wider hover:opacity-60 transition-opacity duration-300">
+            <button className=" text-lg md:text-xl font-light tracking-wider hover:opacity-60 transition-opacity duration-300">
               ABOUT
             </button>
           </nav>

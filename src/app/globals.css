@@ -114,9 +114,67 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes scroll-right {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-scroll-left {
+    animation: scroll-left 60s linear infinite;
+  }
+
+  .animate-scroll-right {
+    animation: scroll-right 60s linear infinite;
+  }
+}
+
+/* Hide scrollbars */
+.overflow-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.overflow-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth transitions for mobile */
+@media (max-width: 768px) {
+  .animate-scroll-left {
+    animation: scroll-left 40s linear infinite;
+  }
+
+  .animate-scroll-right {
+    animation: scroll-right 40s linear infinite;
+  }
+
+  /* Mobile adjustments for varied dimensions */
+  .animate-scroll-left > div,
+  .animate-scroll-right > div {
+    min-width: 200px !important;
+    max-width: 300px !important;
+    min-height: 150px !important;
+    max-height: 250px !important;
   }
 }
