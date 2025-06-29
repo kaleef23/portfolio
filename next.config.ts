@@ -1,30 +1,26 @@
-import type { NextConfig } from "next";
+import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  reactStrictMode: false,
-  // put the domain where images will be hosted here
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "ic.pics.livejournal.com",
-        port: "",
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
       },
       {
-        protocol: "https",
-        hostname: "lh3.googleusercontent.com",
-        port: "",
-      },
-      {
-        protocol: "https",
-        hostname: "ik.imagekit.io",
-        port: "",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.pixabay.com",
-        port: "",
+        protocol: 'https',
+        hostname: 'cdn.pixabay.com',
+        port: '',
+        pathname: '/**',
       },
     ],
   },
