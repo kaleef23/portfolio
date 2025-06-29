@@ -16,23 +16,23 @@ export default function PortfolioModal({ item, isOpen, onClose }: PortfolioModal
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl w-[90vw] h-auto max-h-[90vh] p-0 border-0 flex flex-col md:flex-row overflow-hidden rounded-lg shadow-2xl bg-card text-card-foreground">
-        <div className="relative w-full md:w-3/5 h-64 md:h-auto flex-shrink-0">
+      <DialogContent className="max-w-7xl w-[95vw] h-[95vh] p-0 border-0 flex flex-col md:flex-row overflow-hidden rounded-lg shadow-2xl bg-card text-card-foreground">
+        <div className="relative w-full h-1/2 md:w-3/5 md:h-full flex-shrink-0 bg-black">
           <Image 
             src={item.imageUrl} 
             alt={item.title} 
             fill
             sizes="(max-width: 768px) 90vw, 50vw"
-            style={{ objectFit: 'cover' }} 
+            style={{ objectFit: 'contain' }} 
             data-ai-hint="portrait fashion"
           />
         </div>
-        <div className="flex flex-col flex-1 p-8 overflow-y-auto">
+        <div className="flex flex-col flex-1 p-4 sm:p-8 overflow-y-auto">
           <DialogHeader className="text-left">
-            <DialogTitle className="text-3xl font-headline mb-2 text-primary-foreground">{item.artistName}</DialogTitle>
-            <p className="text-muted-foreground font-body text-lg">{item.title}</p>
+            <DialogTitle className="text-2xl md:text-3xl font-headline mb-2 text-primary">{item.artistName}</DialogTitle>
+            <p className="text-muted-foreground font-body md:text-lg">{item.title}</p>
           </DialogHeader>
-          <div className="my-6 text-base font-body text-foreground/80 leading-relaxed prose prose-invert">
+          <div className="my-6 text-base font-body text-foreground/80 leading-relaxed">
             <p>{item.description}</p>
           </div>
           <div className="mt-auto pt-6">
