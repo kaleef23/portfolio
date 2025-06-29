@@ -32,12 +32,12 @@ const PortfolioItemComponent = ({
         data-ai-hint="portrait fashion"
       />
       <div
-        className={`absolute left-0 w-full p-2 bg-white/90 text-black ${infoPositionClass}`}
+        className={`absolute left-0 w-full p-1 bg-white/90 text-black ${infoPositionClass}`}
       >
-        <h3 className="text-sm font-headline font-semibold">
+        {/* <h3 className="text-sm font-headline font-semibold">
           {item.artistName}
         </h3>
-        <p className="text-xs font-body">{item.title}</p>
+        <p className="text-xs font-body">{item.title}</p> */}
       </div>
     </button>
   );
@@ -68,7 +68,7 @@ export default function PortfolioCarousel({
   const lastTranslateRef = useRef(0);
 
   const duplicatedItems = [...items, ...items, ...items]; // Triple for smoother infinite scroll
-  const speed = direction === "left" ? -0.05 : 0.05; // pixels per millisecond
+  const speed = direction === "left" ? -0.01 : 0.01; // pixels per millisecond
 
   // Calculate widths
   useEffect(() => {
@@ -185,8 +185,7 @@ export default function PortfolioCarousel({
   const handleMouseUp = () => {
     startTouchRef.current = null;
 
-
-      setIsUserInteracting(false);
+    setIsUserInteracting(false);
   };
 
   const alignmentClass = alignment === "top" ? "items-start" : "items-end";
