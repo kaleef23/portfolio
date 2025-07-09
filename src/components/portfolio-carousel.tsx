@@ -18,27 +18,31 @@ const PortfolioItemComponent = ({
   return (
     <button
       onClick={() => onItemClick(item)}
-      className="relative flex-shrink-0 overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background max-h-[60vh] cursor-pointer"
+      className="relative group flex-shrink-0 overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background max-h-[65vh] cursor-pointer"
       style={{ width: item.width }}
       aria-label={`View details for ${item.title} by ${item.artistName}`}
     >
-      <Image
-        src={item.imageUrl}
-        alt={`${item.title} by ${item.artistName}`}
-        width={400}
-        height={600}
-        sizes={`(max-width: 768px) 50vw, 33vw`}
-        className="w-full h-auto object-cover"
-        data-ai-hint="portrait fashion"
-      />
-      <div
-        className={`absolute left-0 w-full p-1 bg-white/90 text-black ${infoPositionClass}`}
-      >
-        {/* <h3 className="text-sm font-headline font-semibold">
-          {item.artistName}
-        </h3>
-        <p className="text-xs font-body">{item.title}</p> */}
-      </div>
+      {item.category === 'video' ? (
+        <video
+          src={item.imageUrl}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <Image
+          src={item.imageUrl}
+          alt={`${item.title} by ${item.artistName}`}
+          width={400}
+          height={600}
+          sizes={`(max-width: 768px) 50vw, 33vw`}
+          className="w-full h-auto object-cover"
+          data-ai-hint="portrait fashion"
+        />
+      )}
+      <div className="absolute inset-0 bg-transparent transition-all duration-300 group-hover:bg-black/20 group-hover:ring-4 group-hover:ring-accent" />
     </button>
   );
 };
@@ -58,6 +62,7 @@ export default function PortfolioCarousel({
 }: PortfolioCarouselProps) {
   const [translateX, setTranslateX] = useState(0);
   const [isUserInteracting, setIsUserInteracting] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
   const [itemsWidth, setItemsWidth] = useState(0);
 
@@ -97,9 +102,11 @@ export default function PortfolioCarousel({
 
         const deltaTime = currentTime - lastTimeRef.current;
         lastTimeRef.current = currentTime;
+        
+        const effectiveSpeed = isHovering ? speed / 4 : speed;
 
         setTranslateX((prev) => {
-          let newTranslate = prev + speed * deltaTime;
+          let newTranslate = prev + effectiveSpeed * deltaTime;
 
           // Reset position for infinite scroll
           if (direction === "left" && newTranslate <= -itemsWidth) {
@@ -114,7 +121,7 @@ export default function PortfolioCarousel({
 
       animationRef.current = requestAnimationFrame(animate);
     },
-    [isUserInteracting, itemsWidth, speed, direction]
+    [isUserInteracting, itemsWidth, speed, direction, isHovering]
   );
 
   // Start animation
@@ -156,9 +163,6 @@ export default function PortfolioCarousel({
 
   const handleTouchEnd = () => {
     startTouchRef.current = null;
-
-    // Resume auto-scroll immediately
-
     setIsUserInteracting(false);
   };
 
@@ -184,9 +188,15 @@ export default function PortfolioCarousel({
 
   const handleMouseUp = () => {
     startTouchRef.current = null;
-
     setIsUserInteracting(false);
   };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    if(startTouchRef.current){
+        handleMouseUp();
+    }
+  }
 
   const alignmentClass = alignment === "top" ? "items-start" : "items-end";
 
@@ -196,13 +206,14 @@ export default function PortfolioCarousel({
       role="region"
       aria-label="Portfolio Carousel"
       ref={containerRef}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={handleMouseLeave}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onMouseDown={handleMouseDown}
       onMouseMove={startTouchRef.current ? handleMouseMove : undefined}
       onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
     >
       <div
         className={`flex w-max h-full transition-transform duration-300 ease-out ${alignmentClass}`}
