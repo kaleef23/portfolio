@@ -170,7 +170,7 @@ export const portfolioItems: PortfolioItem[] = [
     category: "video",
   },
   {
-    id: 13,
+    id: 15,
     artistName: "Dele Kaleef",
     title: "Golden Hour",
     description:
@@ -182,7 +182,7 @@ export const portfolioItems: PortfolioItem[] = [
     category: "image",
   },
   {
-    id: 13,
+    id: 16,
     artistName: "Dele Kaleef",
     title: "Golden Hour",
     description:
@@ -194,7 +194,7 @@ export const portfolioItems: PortfolioItem[] = [
     category: "image",
   },
   {
-    id: 13,
+    id: 17,
     artistName: "Dele Kaleef",
     title: "Golden Hour",
     description:
