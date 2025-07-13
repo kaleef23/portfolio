@@ -7,7 +7,7 @@ export default function Navigation() {
       <Button variant="link" asChild>
         <Link
           href="#"
-          className="text-base sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
+          className="text-[8px] sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
         >
           Works
         </Link>
@@ -15,26 +15,26 @@ export default function Navigation() {
       <Button variant="link" asChild>
         <Link
           href="#"
-          className="text-base sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
+          className="text-[8px] sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
         >
           Shop
         </Link>
       </Button>
-      <div className="text-xl sm:text-3xl font-bold font-headline tracking-widest text-center">
+      <div className="text-sm sm:text-3xl font-bold font-headline tracking-widest text-center">
         <Link href="/">KALEEF LAWAL</Link>
       </div>
       <Button variant="link" asChild>
         <Link
-          href="#"
-          className="text-base sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
+          href="/about"
+          className="text-[8px] sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
         >
           About
         </Link>
       </Button>
       <Button variant="link" asChild>
         <Link
-          href="#"
-          className="text-base sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
+          href="/contact"
+          className="text-[8px] sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
         >
           Contact
         </Link>
