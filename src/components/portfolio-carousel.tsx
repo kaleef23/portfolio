@@ -7,17 +7,16 @@ import { useRouter } from "next/navigation";
 
 const PortfolioItemComponent = ({
   item,
-  onItemClick,
   alignment,
 }: {
   item: PortfolioItemType;
-  onItemClick: (item: PortfolioItemType) => void;
+  // onItemClick: (item: PortfolioItemType) => void;
   alignment: "top" | "bottom";
 }) => {
   const router = useRouter()
 
-  const navigate = (id: number) => {
-    router.push(`/slider/${id}`)
+  const navigate = (id: string) => {
+    router.push(`/collection/${id}`)
   }
 
   const infoPositionClass = alignment === "top" ? "top-0" : "bottom-0";
@@ -47,9 +46,11 @@ const PortfolioItemComponent = ({
           sizes={`(max-width: 768px) 50vw, 33vw`}
           className="w-full h-auto object-cover"
           data-ai-hint="portrait fashion"
+          priority
         />
       )}
       <div className="absolute inset-0 bg-transparent transition-all duration-300 group-hover:bg-black/20 group-hover:ring-4 group-hover:ring-accent" />
+      <span></span>
     </button>
   );
 };
@@ -80,8 +81,11 @@ export default function PortfolioCarousel({
   const interactionStartTime = useRef(0);
   const interactionStartPos = useRef({ x: 0, y: 0 });
 
-  const duplicatedItems = [...items, ...items, ...items];
-  const speed = direction === "left" ? -0.01 : 0.01;
+  // const duplicatedItems = [...items, ...items, ...items];
+  // const speed = direction === "left" ? -0.01 : 0.01;
+
+  const duplicatedItems = items.length > 5 ? [...items, ...items, ...items] : items;
+  const speed = direction === 'left' ? -0.03 : 0.03;
 
   useEffect(() => {
     if (containerRef.current) {
@@ -90,7 +94,8 @@ export default function PortfolioCarousel({
       itemElements.forEach((el) => {
         totalWidth += (el as HTMLElement).offsetWidth;
       });
-      const singleSetWidth = totalWidth / 3;
+      // const singleSetWidth = totalWidth / 3;
+      const singleSetWidth = items.length > 5 ? totalWidth / 3 : totalWidth;
       setItemsWidth(singleSetWidth);
       if (direction === 'right') {
         setTranslateX(-singleSetWidth);
@@ -100,7 +105,8 @@ export default function PortfolioCarousel({
 
   const animate = useCallback(
     (currentTime: number) => {
-      if (!isUserInteracting) {
+      // if (!isUserInteracting) {
+      if (!isUserInteracting && items.length > 5) {
         if (lastTimeRef.current === 0) {
           lastTimeRef.current = currentTime;
         }
@@ -125,11 +131,12 @@ export default function PortfolioCarousel({
 
       animationRef.current = requestAnimationFrame(animate);
     },
-    [isUserInteracting, itemsWidth, speed, direction, isHovering]
+    [isUserInteracting, itemsWidth, speed, direction, isHovering, items]
   );
 
   useEffect(() => {
-    if (itemsWidth > 0) {
+    // if (itemsWidth > 0) {
+    if (itemsWidth > 0 && items.length > 5) {
       animationRef.current = requestAnimationFrame(animate);
     }
     return () => {
@@ -137,7 +144,7 @@ export default function PortfolioCarousel({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [animate, itemsWidth]);
+  }, [animate, itemsWidth, items]);
 
   const handleInteractionStart = (clientX: number, clientY: number) => {
     setIsUserInteracting(true);
@@ -218,6 +225,7 @@ export default function PortfolioCarousel({
     
     setTranslateX(prev => {
         let newTranslate = prev - scrollAmount;
+        if(items.length > 5) {
          if (direction === "left" && newTranslate <= -itemsWidth) {
             newTranslate += itemsWidth;
           } else if (direction === "right" && newTranslate >= 0) {
@@ -227,6 +235,7 @@ export default function PortfolioCarousel({
           } else if (direction === "right" && newTranslate < -itemsWidth) {
             newTranslate += itemsWidth;
           }
+        }
         return newTranslate;
     });
     
@@ -264,7 +273,6 @@ export default function PortfolioCarousel({
           <div key={`${item.id}-${index}`} data-item-id={item.id}>
             <PortfolioItemComponent
               item={item}
-              onItemClick={() => {}} // Click handled by parent div
               alignment={alignment}
             />
           </div>
