@@ -71,7 +71,7 @@ export const portfolioItems: PortfolioItem[] = [
       "https://ik.imagekit.io/georgiedev/Test/Kaleef%20x%20Gojas.mov",
     width: "180px",
     shopifyUrl: "https://shopify.com",
-    category: "video",
+    category: "image",
   },
   {
     id: 7,
