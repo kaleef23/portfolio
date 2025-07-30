@@ -13,11 +13,11 @@ const PortfolioItemComponent = ({
   // onItemClick: (item: PortfolioItemType) => void;
   alignment: "top" | "bottom";
 }) => {
-  const router = useRouter()
+  const router = useRouter();
 
   const navigate = (id: string) => {
-    router.push(`/collection/${id}`)
-  }
+    router.push(`/collection/${id}`);
+  };
 
   const infoPositionClass = alignment === "top" ? "top-0" : "bottom-0";
 
@@ -28,7 +28,7 @@ const PortfolioItemComponent = ({
       style={{ width: item.width }}
       aria-label={`View details for ${item.title} by ${item.artistName}`}
     >
-      {item.category === 'video' ? (
+      {item.category === "video" ? (
         <video
           src={item.imageUrl}
           autoPlay
@@ -38,16 +38,22 @@ const PortfolioItemComponent = ({
           className="w-full h-full object-cover"
         />
       ) : (
-        <Image
+        <img
           src={item.imageUrl}
           alt={`${item.title} by ${item.artistName}`}
-          width={400}
-          height={600}
-          sizes={`(max-width: 768px) 50vw, 33vw`}
           className="w-full h-auto object-cover"
           data-ai-hint="portrait fashion"
-          priority
         />
+        // <Image
+        //   src={item.imageUrl}
+        //   alt={`${item.title} by ${item.artistName}`}
+        //   width={400}
+        //   height={600}
+        //   sizes={`(max-width: 768px) 50vw, 33vw`}
+        //   className="w-full h-auto object-cover"
+        //   data-ai-hint="portrait fashion"
+        //   priority
+        // />
       )}
       <div className="absolute inset-0 bg-transparent transition-all duration-300 group-hover:bg-black/20 group-hover:ring-4 group-hover:ring-accent" />
       <span></span>
@@ -66,8 +72,8 @@ export default function PortfolioCarousel({
   items,
   direction,
   alignment,
-  // onItemClick,
-}: PortfolioCarouselProps) {
+}: // onItemClick,
+PortfolioCarouselProps) {
   const [translateX, setTranslateX] = useState(0);
   const [isUserInteracting, setIsUserInteracting] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -81,28 +87,29 @@ export default function PortfolioCarousel({
   const interactionStartTime = useRef(0);
   const interactionStartPos = useRef({ x: 0, y: 0 });
 
-  const duplicatedItems = [...items, ...items, ...items];
+  // Create more duplicates to avoid needing resets
+  const duplicatedItems = items.length > 5 ? [...items, ...items, ...items, ...items, ...items] : items;
   const speed = direction === "left" ? -0.04 : 0.04;
 
   useEffect(() => {
     if (containerRef.current) {
       let totalWidth = 0;
-      const itemElements = containerRef.current.querySelectorAll('[data-item-id]');
+      const itemElements =
+        containerRef.current.querySelectorAll("[data-item-id]");
       itemElements.forEach((el) => {
         totalWidth += (el as HTMLElement).offsetWidth;
       });
-      // const singleSetWidth = totalWidth / 3;
-      const singleSetWidth = items.length > 5 ? totalWidth / 3 : totalWidth;
+      const singleSetWidth = items.length > 5 ? totalWidth / 5 : totalWidth;
       setItemsWidth(singleSetWidth);
-      if (direction === 'right') {
-        setTranslateX(-singleSetWidth);
+      // Start from the middle set for both directions to enable smooth infinite scroll
+      if (items.length > 5) {
+        setTranslateX(-singleSetWidth * 2); // Start from the middle of our 5 sets
       }
     }
   }, [items, direction]);
 
   const animate = useCallback(
     (currentTime: number) => {
-      // if (!isUserInteracting) {
       if (!isUserInteracting && items.length > 5) {
         if (lastTimeRef.current === 0) {
           lastTimeRef.current = currentTime;
@@ -116,10 +123,20 @@ export default function PortfolioCarousel({
         setTranslateX((prev) => {
           let newTranslate = prev + effectiveSpeed * deltaTime;
 
-          if (direction === "left" && newTranslate <= -itemsWidth) {
-            newTranslate += itemsWidth;
-          } else if (direction === "right" && newTranslate >= 0) {
-            newTranslate -= itemsWidth;
+          // With 5 sets, we have more room to scroll before needing to reset
+          // Reset only happens at extreme boundaries, maintaining flow direction
+          if (direction === "left") {
+            // Reset when we've scrolled to the end of the 4th set
+            if (newTranslate <= -itemsWidth * 4) {
+              // Jump to the end of the 2nd set (same content, maintains left flow)
+              newTranslate = -itemsWidth * 2;
+            }
+          } else if (direction === "right") {
+            // Reset when we've scrolled to the beginning of the 1st set
+            if (newTranslate >= 0) {
+              // Jump to the beginning of the 3rd set (same content, maintains right flow)
+              newTranslate = -itemsWidth * 2;
+            }
           }
 
           return newTranslate;
@@ -172,40 +189,50 @@ export default function PortfolioCarousel({
     const deltaTime = Date.now() - interactionStartTime.current;
 
     if (deltaTime < 200 && Math.abs(deltaX) < 10) {
-      const clickedElement = document.elementFromPoint(endX, interactionStartPos.current.y);
-      const itemContainer = clickedElement?.closest('[data-item-id]');
+      const clickedElement = document.elementFromPoint(
+        endX,
+        interactionStartPos.current.y
+      );
+      const itemContainer = clickedElement?.closest("[data-item-id]");
       if (itemContainer) {
-        const itemId = itemContainer.getAttribute('data-item-id');
-        const item = items.find(i => i.id.toString() === itemId);
+        const itemId = itemContainer.getAttribute("data-item-id");
+        const item = items.find((i) => i.id.toString() === itemId);
         // if (item) {
         //   onItemClick(item);
         // }
       }
     }
-    
+
     startTouchRef.current = null;
     setIsUserInteracting(false);
-    animationRef.current = requestAnimationFrame(animate);
-  };
-  
-  const handleTouchStart = (e: React.TouchEvent) => handleInteractionStart(e.touches[0].clientX, e.touches[0].clientY);
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length > 0) {
-        handleInteractionMove(e.touches[0].clientX, e.touches[0].clientY);
+    if (items.length > 5) {
+      animationRef.current = requestAnimationFrame(animate);
     }
   };
-  const handleTouchEnd = (e: React.TouchEvent) => handleInteractionEnd(e.changedTouches[0].clientX);
-  
-  const handleMouseDown = (e: React.MouseEvent) => handleInteractionStart(e.clientX, e.clientY);
-  const handleMouseMove = (e: React.MouseEvent) => handleInteractionMove(e.clientX, e.clientY);
-  const handleMouseUp = (e: React.MouseEvent) => handleInteractionEnd(e.clientX);
+
+  const handleTouchStart = (e: React.TouchEvent) =>
+    handleInteractionStart(e.touches[0].clientX, e.touches[0].clientY);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      handleInteractionMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  };
+  const handleTouchEnd = (e: React.TouchEvent) =>
+    handleInteractionEnd(e.changedTouches[0].clientX);
+
+  const handleMouseDown = (e: React.MouseEvent) =>
+    handleInteractionStart(e.clientX, e.clientY);
+  const handleMouseMove = (e: React.MouseEvent) =>
+    handleInteractionMove(e.clientX, e.clientY);
+  const handleMouseUp = (e: React.MouseEvent) =>
+    handleInteractionEnd(e.clientX);
 
   const handleMouseLeave = () => {
     setIsHovering(false);
     if (startTouchRef.current) {
-        handleMouseUp({ clientX: startTouchRef.current.x } as React.MouseEvent);
+      handleMouseUp({ clientX: startTouchRef.current.x } as React.MouseEvent);
     }
-  }
+  };
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
@@ -219,23 +246,25 @@ export default function PortfolioCarousel({
     } else {
       scrollAmount = e.deltaY * 1.5;
     }
-    
-    setTranslateX(prev => {
-        let newTranslate = prev - scrollAmount;
-        if(items.length > 5) {
-         if (direction === "left" && newTranslate <= -itemsWidth) {
-            newTranslate += itemsWidth;
-          } else if (direction === "right" && newTranslate >= 0) {
-            newTranslate -= itemsWidth;
-          } else if (direction === "left" && newTranslate > 0) {
-            newTranslate -= itemsWidth;
-          } else if (direction === "right" && newTranslate < -itemsWidth) {
-            newTranslate += itemsWidth;
-          }
+
+    setTranslateX((prev) => {
+      let newTranslate = prev - scrollAmount;
+      // Allow free scrolling without bounds when items <= 5
+      if (items.length > 5) {
+        // Seamless boundary handling for infinite scroll
+        if (direction === "left" && newTranslate <= -itemsWidth * 2) {
+          newTranslate = -itemsWidth + (newTranslate + itemsWidth * 2);
+        } else if (direction === "right" && newTranslate >= 0) {
+          newTranslate = -itemsWidth * 2 + newTranslate;
+        } else if (direction === "left" && newTranslate > -itemsWidth) {
+          newTranslate = -itemsWidth * 2 + (newTranslate + itemsWidth);
+        } else if (direction === "right" && newTranslate < -itemsWidth * 2) {
+          newTranslate = -itemsWidth + (newTranslate + itemsWidth * 2);
         }
-        return newTranslate;
+      }
+      return newTranslate;
     });
-    
+
     // Debounce to re-enable auto-scroll
     const timer = setTimeout(() => setIsUserInteracting(false), 200);
     return () => clearTimeout(timer);
@@ -268,10 +297,7 @@ export default function PortfolioCarousel({
       >
         {duplicatedItems.map((item, index) => (
           <div key={`${item.id}-${index}`} data-item-id={item.id}>
-            <PortfolioItemComponent
-              item={item}
-              alignment={alignment}
-            />
+            <PortfolioItemComponent item={item} alignment={alignment} />
           </div>
         ))}
       </div>

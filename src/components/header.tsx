@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/s
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/slider', label: 'Works' },
+  { href: '/works', label: 'Works' },
   { href: '#', label: 'Shop' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
@@ -40,7 +40,7 @@ export default function Header() {
 
   return (
     <header className="w-full px-4 sm:px-8 lg:px-16 py-2 flex justify-between items-center z-10 h-20 bg-white border-b">
-      <div className="text-2xl sm:text-3xl font-bold font-headline tracking-widest">
+      <div className="text-[8px] sm:text-lg font-bold font-headline tracking-widest">
         <Link href="/">KALEEF LAWAL</Link>
       </div>
 
@@ -64,7 +64,7 @@ export default function Header() {
             <SheetTitle></SheetTitle>
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center p-4 border-b">
-                <div className="text-2xl font-bold font-headline tracking-widest">
+                <div className="text-[8px] sm:text-lg font-bold font-headline tracking-widest">
                   <Link href="/" onClick={() => setIsOpen(false)}>KALEEF LAWAL</Link>
                 </div>
                 {/* <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>

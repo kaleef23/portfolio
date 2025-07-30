@@ -7,10 +7,10 @@ export default function AboutPage() {
       <header className="fixed top-0 left-0 w-full z-20 bg-white">
         <Header />
       </header>
-      <main className="flex-grow pt-32 pb-16 px-4 sm:px-8 lg:px-16">
+      <main className="flex-grow pt-28 pb-10 px-4 sm:px-8 lg:px-16">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h1 className="font-headline text-5xl sm:text-6xl text-foreground">
+          <div className="text-center mb-2">
+            <h1 className="font-headline text-lg sm:text-2xl text-foreground">
               About
             </h1>
             {/* <p className="mt-4 text-lg text-foreground/70 max-w-3xl mx-auto">

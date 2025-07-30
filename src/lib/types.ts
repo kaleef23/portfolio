@@ -20,7 +20,7 @@ export interface Collection {
   title: string;
   description?: string;
   posterImageUrl: string;
-  posterImageCategory: 'image' | 'video';
+  posterImageCategory?: 'image' | 'video';
   images: CollectionImage[];
   createdAt?: string;
 }

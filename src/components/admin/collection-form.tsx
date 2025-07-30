@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import type { Collection } from "@/lib/types";
@@ -23,14 +22,18 @@ import { addCollection, updateCollection } from "@/app/admin/action";
 import { X, UploadCloud, Loader2 } from "lucide-react";
 import { Separator } from "../ui/separator";
 
+// 🧠 Extended schema to include category
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters."),
-  // description: z
-  //   .string()
-  //   .min(10, "Description must be at least 10 characters."),
   posterImageUrl: z.string().url("A poster image is required."),
+  posterImageCategory: z.enum(["image", "video"]).optional(),
   images: z
-    .array(z.object({ url: z.string().url() }))
+    .array(
+      z.object({
+        url: z.string().url(),
+        category: z.enum(["image", "video"]).optional(),
+      })
+    )
     .min(1, "At least one collection image is required."),
 });
 
@@ -52,8 +55,8 @@ export default function CollectionForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: existingCollection?.title ?? "",
-      // description: "",
       posterImageUrl: existingCollection?.posterImageUrl ?? "",
+      posterImageCategory: existingCollection?.posterImageCategory ?? "image",
       images: existingCollection?.images ?? [],
     },
   });
@@ -83,12 +86,13 @@ export default function CollectionForm({
         throw new Error("Upload failed");
       }
 
-      const { url } = await response.json();
+      const { url, category } = await response.json();
 
       if (type === "poster") {
         form.setValue("posterImageUrl", url, { shouldValidate: true });
+        form.setValue("posterImageCategory", category);
       } else {
-        append({ url });
+        append({ url, category });
       }
 
       toast({ title: "Success", description: "Image uploaded successfully." });
@@ -107,30 +111,20 @@ export default function CollectionForm({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
-      let result;
-      if (existingCollection) {
-        result = await updateCollection(existingCollection.id, values);
-        if (result.success) {
-          toast({
-            title: "Success",
-            description: "Collection updated successfully.",
-          });
-          router.push("/admin");
-        }
-      } else {
-        result = await addCollection(values);
-        if (result.success) {
-          toast({
-            title: "Success",
-            description: "Collection added successfully.",
-          });
-          router.push("/admin");
-        }
-      }
+      const result = existingCollection
+        ? await updateCollection(existingCollection.id, values)
+        : await addCollection(values);
 
-      if (!result.success) {
-        throw new Error(result.error);
-      }
+      if (!result.success) throw new Error(result.error);
+
+      toast({
+        title: "Success",
+        description: existingCollection
+          ? "Collection updated successfully."
+          : "Collection added successfully.",
+      });
+
+      router.push("/admin");
     } catch (error) {
       toast({
         variant: "destructive",
@@ -159,26 +153,13 @@ export default function CollectionForm({
             </FormItem>
           )}
         />
-        {/* <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Collection Description" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
 
         <FormField
           control={form.control}
           name="posterImageUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Poster Image</FormLabel>
+              <FormLabel>Poster Media</FormLabel>
               <FormControl>
                 <div>
                   <Input
@@ -204,19 +185,26 @@ export default function CollectionForm({
                       <p className="text-sm text-gray-600">
                         {isUploading === "poster"
                           ? "Uploading..."
-                          : "Click to upload poster image"}
+                          : "Click to upload poster"}
                       </p>
                     </div>
                   </label>
                   {field.value && (
                     <div className="mt-4 relative w-40 h-40">
-                      <Image
-                        src={field.value}
-                        alt="Poster preview"
-                        fill
-                        className="rounded-md object-cover"
-                        data-ai-hint="collection poster"
-                      />
+                      {form.getValues("posterImageCategory") === "video" ? (
+                        <video
+                          src={field.value}
+                          controls
+                          className="w-full h-full rounded-md object-cover"
+                        />
+                      ) : (
+                        <Image
+                          src={field.value}
+                          alt="Poster preview"
+                          fill
+                          className="rounded-md object-cover"
+                        />
+                      )}
                     </div>
                   )}
                 </div>
@@ -229,18 +217,32 @@ export default function CollectionForm({
         <Separator />
 
         <div className="space-y-4">
-          <FormLabel>Collection Images</FormLabel>
+          <FormLabel>Collection Media</FormLabel>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {fields.map((item, index) => (
               <div key={item.id} className="relative group">
-                <Image
-                  src={item.url}
-                  alt={`Collection image ${index + 1}`}
-                  width={200}
-                  height={200}
-                  className="rounded-md object-cover aspect-square"
-                  data-ai-hint="collection image"
-                />
+                {item.category === "video" ? (
+                  <video
+                    src={item.url}
+                    controls
+                    className="w-full h-full rounded-md object-cover aspect-square"
+                  />
+                ) : (
+                  // <Image
+                  //   src={item.url}
+                  //   alt={`Collection image ${index + 1}`}
+                  //   width={200}
+                  //   height={200}
+                  //   className="rounded-md object-cover aspect-square"
+                  // />
+
+                  <img
+                    src={item.url}
+                    alt={`Collection image ${index + 1}`}
+                    className="rounded-md object-cover aspect-square"
+                    data-ai-hint="portrait fashion"
+                  />
+                )}
                 <Button
                   type="button"
                   variant="destructive"
@@ -277,7 +279,7 @@ export default function CollectionForm({
                   ) : (
                     <UploadCloud className="mx-auto h-8 w-8 text-gray-400" />
                   )}
-                  <p className="text-xs text-gray-600">Add Images</p>
+                  <p className="text-xs text-gray-600">Add Media</p>
                 </div>
               </label>
             </div>

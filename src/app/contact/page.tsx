@@ -12,7 +12,7 @@ export default function ContactPage() {
       </header>
       <main className="flex-grow pt-28 pb-16 px-4 sm:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl font-headline text-center mb-12">Say Hello</h1>
+          <h1 className="text-lg sm:text-3xl font-headline text-center mb-12">Get In Touch</h1>
           
           <div className="max-w-2xl mx-auto">
             <ContactForm />

@@ -24,7 +24,7 @@ import { Timestamp } from "firebase/firestore";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const collections = await getCollections();
+  const collections = await getCollections();  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,14 +56,21 @@ export default async function AdminDashboard() {
                   collections.map((collection) => (
                     <TableRow key={collection.id}>
                       <TableCell>
-                        <Image
-                          src={collection.posterImageUrl}
-                          alt={collection.title}
-                          width={50}
-                          height={50}
-                          className="rounded object-cover aspect-square"
-                          data-ai-hint="collection poster"
-                        />
+                        {collection.posterImageCategory === "video" ? (
+                          <video
+                            src={collection.posterImageUrl}
+                            controls
+                            className="rounded object-cover aspect-square"
+                            data-ai-hint="collection poster"
+                          />
+                        ) : (
+                          <img
+                            src={collection.posterImageUrl}
+                            alt={collection.title}
+                            className="rounded object-cover aspect-square"
+                            data-ai-hint="collection poster"
+                          />
+                        )}
                       </TableCell>
                       <TableCell className="font-medium">
                         {collection.title}
@@ -74,7 +81,7 @@ export default async function AdminDashboard() {
                           ? new Date(
                               collection.createdAt as string
                             ).toLocaleDateString()
-                          : 'N/A'}
+                          : "N/A"}
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
