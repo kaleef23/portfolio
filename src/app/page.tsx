@@ -1,23 +1,54 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { portfolioItems } from "@/data/portfolio-items";
-import type { PortfolioItem } from "@/lib/types";
+import type { Collection, PortfolioItem } from "@/lib/types";
 import Navigation from "@/components/navigation";
 import PortfolioCarousel from "@/components/portfolio-carousel";
+import { getCollections } from "./admin/action";
 
 export default function Home() {
-  const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
+  const [items, setItems] = useState<PortfolioItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleItemClick = (item: PortfolioItem) => {
-    setSelectedItem(item);
-  };
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const collections: Collection[] = await getCollections();
+        const portfolioItems: PortfolioItem[] = collections.map(
+          (collection) => ({
+            id: collection.id, // Use Firestore document ID
+            artistName: 'Dele Kaleef',
+            title: collection.title,
+            // description: collection.description,
+            imageUrl: collection.posterImageUrl,
+            width: '180px', // or make this dynamic if needed
+            shopifyUrl: `/collection/${collection.id}`, // Link to collection page
+            category: collection.posterImageCategory || 'image',
+          })
+        );
+        setItems(portfolioItems);
+      } catch (error) {
+        console.error('Failed to fetch collections:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const handleCloseModal = () => {
-    setSelectedItem(null);
-  };
+    fetchCollections();
+  }, []);
+
+  const topItems = items.slice(0, 24);
+  const bottomItems = items.slice(24, 48);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full bg-background">
+        <div className="text-foreground">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-full bg-background text-foreground overflow-hidden">
@@ -28,7 +59,7 @@ export default function Home() {
         transition={{ duration: 0.8, ease: "easeInOut" }}
       >
         <PortfolioCarousel
-          items={portfolioItems}
+          items={topItems}
           direction="left"
           alignment="top"
           // onItemClick={handleItemClick}
@@ -51,7 +82,7 @@ export default function Home() {
         transition={{ duration: 0.8, ease: "easeInOut" }}
       >
         <PortfolioCarousel
-          items={[...portfolioItems].reverse()}
+          items={bottomItems.length > 0 ? bottomItems : [...topItems].reverse()}
           direction="right"
           alignment="bottom"
           // onItemClick={handleItemClick}

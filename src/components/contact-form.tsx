@@ -107,7 +107,7 @@ export default function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" size="lg" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-base">
+        <Button type="submit" size="lg" className="w-full bg-gray-700 hover:bg-gray-700/90 text-accent-foreground text-base">
           Send Message
         </Button>
       </form>

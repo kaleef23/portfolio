@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-<<<<<<< HEAD
 @font-face {
   font-family: "Helvetica Neue";
   src: url("/fonts/HelveticaNeue-Black.woff2") format("woff2"),
@@ -21,8 +20,6 @@
     font-display: swap;
 }
 
-=======
->>>>>>> 7bbf5bdef6f05944d7729f6d5d7c3f59651e1c3a
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -82,11 +79,6 @@
   body {
     @apply bg-background text-foreground;
   }
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 7bbf5bdef6f05944d7729f6d5d7c3f59651e1c3a
   @keyframes scroll-left {
     from {
       transform: translateX(0);

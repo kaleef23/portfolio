@@ -12,11 +12,7 @@ export default function ContactPage() {
       </header>
       <main className="flex-grow pt-28 pb-16 px-4 sm:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto">
-<<<<<<< HEAD
-          <h1 className="text-4xl sm:text-5xl font-headline text-center mb-12">Say Hello</h1>
-=======
-          <h1 className="text-4xl sm:text-5xl font-headline text-center mb-12">{"Let's Chat!"}</h1>
->>>>>>> 7bbf5bdef6f05944d7729f6d5d7c3f59651e1c3a
+          <h1 className="text-lg sm:text-3xl font-headline text-center mb-12">Get In Touch</h1>
           
           <div className="max-w-2xl mx-auto">
             <ContactForm />
@@ -45,11 +41,7 @@ export default function ContactPage() {
             <div>
               <h2 className="text-2xl font-headline mb-6">Follow</h2>
               <div className="space-y-4 text-foreground/80">
-<<<<<<< HEAD
                 <a href="https://www.instagram.com/delelawalphotog/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-3 hover:text-primary transition-colors">
-=======
-                <a href="#" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-3 hover:text-primary transition-colors">
->>>>>>> 7bbf5bdef6f05944d7729f6d5d7c3f59651e1c3a
                   <Instagram className="w-5 h-5" />
                   <span>Instagram</span>
                 </a>
@@ -57,11 +49,7 @@ export default function ContactPage() {
                   <Twitter className="w-5 h-5" />
                   <span>Twitter</span>
                 </a>
-<<<<<<< HEAD
                  <a href="https://www.linkedin.com/in/oladelelawal/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-3 hover:text-primary transition-colors">
-=======
-                 <a href="#" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center md:justify-start gap-3 hover:text-primary transition-colors">
->>>>>>> 7bbf5bdef6f05944d7729f6d5d7c3f59651e1c3a
                   <Linkedin className="w-5 h-5" />
                   <span>LinkedIn</span>
                 </a>
