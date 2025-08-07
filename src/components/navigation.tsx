@@ -7,7 +7,7 @@ export default function Navigation() {
       <Button variant="link" asChild>
         <Link
           href="/works"
-          className="text-[6px] sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
+          className="text-[4px] sm:text-base md:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
         >
           Works
         </Link>
@@ -15,7 +15,7 @@ export default function Navigation() {
       <Button variant="link" asChild>
         <Link
           href="#"
-          className="text-[6px] sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
+          className="text-[4px] sm:text-base md:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
         >
           Shop
         </Link>
@@ -26,7 +26,7 @@ export default function Navigation() {
       <Button variant="link" asChild>
         <Link
           href="/about"
-          className="text-[6px] sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
+          className="text-[4px] sm:text-base md:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
         >
           About
         </Link>
@@ -34,7 +34,7 @@ export default function Navigation() {
       <Button variant="link" asChild>
         <Link
           href="/contact"
-          className="text-[6px] sm:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
+          className="text-[4px] sm:text-base md:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
         >
           Contact
         </Link>

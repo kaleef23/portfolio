@@ -23,4 +23,5 @@ export interface Collection {
   posterImageCategory?: 'image' | 'video';
   images: CollectionImage[];
   createdAt?: string;
+  tag?: string;
 }

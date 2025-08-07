@@ -46,6 +46,7 @@ export default async function AdminDashboard() {
                 <TableRow>
                   <TableHead className="w-[80px]">Poster</TableHead>
                   <TableHead>Title</TableHead>
+                  <TableHead>Tag</TableHead>
                   <TableHead>Image Count</TableHead>
                   <TableHead>Created At</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -74,6 +75,9 @@ export default async function AdminDashboard() {
                       </TableCell>
                       <TableCell className="font-medium">
                         {collection.title}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {collection.tag ?? "N/A"}
                       </TableCell>
                       <TableCell>{collection.images.length}</TableCell>
                       <TableCell>

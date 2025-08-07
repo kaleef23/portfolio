@@ -9,7 +9,9 @@ import {
   doc,
   getDoc,
   getDocs,
+  query,
   updateDoc,
+  where,
   type Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -70,6 +72,7 @@ export async function getCollection(id: string): Promise<Collection | null> {
       description: data.description,
       posterImageUrl: data.posterImageUrl,
       images: data.images,
+      tag: data.tag,
       // Convert Timestamp to ISO string if it exists
       createdAt: data.createdAt?.toDate()?.toISOString() ?? new Date().toISOString(),
     };
@@ -77,6 +80,37 @@ export async function getCollection(id: string): Promise<Collection | null> {
   } else {
     return null;
   }
+}
+
+export async function getCollectionsByTag(tag: string): Promise<Collection[]> {
+  const q = query(collection(db, 'collections'), where('tag', '==', tag));
+  const collectionsSnapshot = await getDocs(q);
+  const collectionsWithTimestamps: (Collection & { rawCreatedAt?: Timestamp })[] = [];
+  collectionsSnapshot.forEach((doc) => {
+    const data = doc.data();
+    collectionsWithTimestamps.push({
+      id: doc.id,
+      ...data,
+      rawCreatedAt: data.createdAt, // Keep raw timestamp for sorting
+    } as Collection & { rawCreatedAt?: Timestamp });
+  });
+
+  // Sort using the raw timestamp
+  collectionsWithTimestamps.sort(
+    (a, b) =>
+      (b.rawCreatedAt?.toMillis() ?? 0) - (a.rawCreatedAt?.toMillis() ?? 0)
+  );
+
+  // Convert to plain objects for serialization
+  const collections: Collection[] = collectionsWithTimestamps.map((c) => {
+    const { rawCreatedAt, ...rest } = c;
+    return {
+      ...rest,
+      createdAt: new Date().toISOString(),
+    };
+  });
+
+  return collections;
 }
 
 export async function addCollection(

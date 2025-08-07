@@ -14,6 +14,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +34,7 @@ const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters."),
   posterImageUrl: z.string().url("A poster image is required."),
   posterImageCategory: z.enum(["image", "video"]).optional(),
+  tag: z.string().optional(),
   images: z
     .array(
       z.object({
@@ -61,6 +69,7 @@ export default function CollectionForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: existingCollection?.title ?? "",
+      tag: existingCollection?.tag,
       posterImageUrl: existingCollection?.posterImageUrl ?? "",
       posterImageCategory: existingCollection?.posterImageCategory ?? "image",
       images: existingCollection?.images ?? [],
@@ -206,6 +215,28 @@ export default function CollectionForm({
               <FormControl>
                 <Input placeholder="Collection Title" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="tag"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tag</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a tag (optional)" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="artistic">Artistic</SelectItem>
+                  <SelectItem value="commercial">Commercial</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

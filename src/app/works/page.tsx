@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const images = {
-  default: "https://ssgqldxmwqttfijcaazy.supabase.co/storage/v1/object/public/media/images/1753732557973-odia%206.jpg",
+  default:
+    "https://cdn.pixabay.com/photo/2023/06/27/10/51/pier-8091934_960_720.jpg",
   artistic:
     "https://ik.imagekit.io/qlc53zzxb/kaleef-lawal/kaleef_lawal_07.jpg?updatedAt=175204105271",
   commercial:
@@ -55,9 +56,9 @@ export default function WorksPage() {
 
         <div
           className="relative z-10 flex flex-col items-center justify-center gap-4 sm:gap-8 sm:flex-row"
-          onMouseLeave={() => setActiveCategory("artistic")}
+          onMouseLeave={() => setActiveCategory("default")}
         >
-          <Link href="/artistic" className="w-full sm:w-auto">
+          <Link href="/works/artistic" className="w-full sm:w-auto">
             <Button
               variant="outline"
               size="lg"
@@ -67,7 +68,7 @@ export default function WorksPage() {
               Artistic
             </Button>
           </Link>
-          <Link href="/commercial" className="w-full sm:w-auto">
+          <Link href="/works/commercial" className="w-full sm:w-auto">
             <Button
               variant="outline"
               size="lg"
