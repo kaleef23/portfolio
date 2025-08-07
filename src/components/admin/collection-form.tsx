@@ -21,8 +21,8 @@ import type { Collection } from "@/lib/types";
 import { addCollection, updateCollection } from "@/app/admin/action";
 import { X, UploadCloud, Loader2 } from "lucide-react";
 import { Separator } from "../ui/separator";
+import { Progress } from "../ui/progress";
 
-// 🧠 Extended schema to include category
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters."),
   posterImageUrl: z.string().url("A poster image is required."),
@@ -50,6 +50,12 @@ export default function CollectionForm({
   const [isUploading, setIsUploading] = useState<
     "poster" | "collection" | null
   >(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStats, setUploadStats] = useState({
+    total: 0,
+    success: 0,
+    failed: 0,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,43 +72,94 @@ export default function CollectionForm({
     name: "images",
   });
 
-  const handleFileUpload = async (
+  const handleSingleFileUpload = async (
     file: File,
     type: "poster" | "collection"
   ) => {
-    if (!file) return;
-    setIsUploading(type);
-
     const formData = new FormData();
     formData.append("file", file);
 
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Upload failed");
+    }
+
+    const { url, category } = await response.json();
+    return { url, category };
+  };
+
+  const handlePosterUpload = async (file: File) => {
+    if (!file) return;
+    setIsUploading("poster");
+
     try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const { url, category } = await response.json();
-
-      if (type === "poster") {
-        form.setValue("posterImageUrl", url, { shouldValidate: true });
-        form.setValue("posterImageCategory", category);
-      } else {
-        append({ url, category });
-      }
-
-      toast({ title: "Success", description: "Image uploaded successfully." });
+      const { url, category } = await handleSingleFileUpload(file, "poster");
+      form.setValue("posterImageUrl", url, { shouldValidate: true });
+      form.setValue("posterImageCategory", category);
+      toast({ title: "Success", description: "Poster uploaded successfully." });
     } catch (error) {
       console.error("Upload error:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Image upload failed. Please try again.",
+        description: "Poster upload failed. Please try again.",
       });
+    } finally {
+      setIsUploading(null);
+    }
+  };
+
+  const handleBulkUpload = async (files: FileList) => {
+    setIsUploading("collection");
+    setUploadProgress(0);
+    setUploadStats({
+      total: files.length,
+      success: 0,
+      failed: 0,
+    });
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        try {
+          const file = files[i];
+          const { url, category } = await handleSingleFileUpload(
+            file,
+            "collection"
+          );
+          append({ url, category });
+          setUploadStats((prev) => ({
+            ...prev,
+            success: prev.success + 1,
+          }));
+        } catch (error) {
+          console.error(`Error uploading file ${i + 1}:`, error);
+          setUploadStats((prev) => ({
+            ...prev,
+            failed: prev.failed + 1,
+          }));
+        }
+        setUploadProgress(((i + 1) / files.length) * 100);
+      }
+
+      if (uploadStats.failed > 0) {
+        toast({
+          variant: uploadStats.failed === files.length ? "destructive" : "default",
+          title: uploadStats.failed === files.length ? "Error" : "Partial Success",
+          description:
+            uploadStats.failed === files.length
+              ? "All files failed to upload"
+              : `Uploaded ${uploadStats.success} of ${files.length} files`,
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "All files uploaded successfully.",
+        });
+      }
     } finally {
       setIsUploading(null);
     }
@@ -167,10 +224,10 @@ export default function CollectionForm({
                     className="hidden"
                     id="poster-upload"
                     onChange={(e) =>
-                      e.target.files &&
-                      handleFileUpload(e.target.files[0], "poster")
+                      e.target.files && handlePosterUpload(e.target.files[0])
                     }
                     disabled={isUploading === "poster"}
+                    accept="image/*,video/*"
                   />
                   <label
                     htmlFor="poster-upload"
@@ -228,14 +285,6 @@ export default function CollectionForm({
                     className="w-full h-full rounded-md object-cover aspect-square"
                   />
                 ) : (
-                  // <Image
-                  //   src={item.url}
-                  //   alt={`Collection image ${index + 1}`}
-                  //   width={200}
-                  //   height={200}
-                  //   className="rounded-md object-cover aspect-square"
-                  // />
-
                   <img
                     src={item.url}
                     alt={`Collection image ${index + 1}`}
@@ -262,12 +311,11 @@ export default function CollectionForm({
                 multiple
                 onChange={(e) => {
                   if (e.target.files) {
-                    Array.from(e.target.files).forEach((file) =>
-                      handleFileUpload(file, "collection")
-                    );
+                    handleBulkUpload(e.target.files);
                   }
                 }}
                 disabled={isUploading === "collection"}
+                accept="image/*,video/*"
               />
               <label
                 htmlFor="collection-upload"
@@ -275,15 +323,30 @@ export default function CollectionForm({
               >
                 <div className="space-y-1 text-center">
                   {isUploading === "collection" ? (
-                    <Loader2 className="mx-auto h-8 w-8 text-gray-400 animate-spin" />
+                    <>
+                      <Loader2 className="mx-auto h-8 w-8 text-gray-400 animate-spin" />
+                      <p className="text-xs text-gray-600">
+                        Uploading ({Math.round(uploadProgress)}%)
+                      </p>
+                    </>
                   ) : (
-                    <UploadCloud className="mx-auto h-8 w-8 text-gray-400" />
+                    <>
+                      <UploadCloud className="mx-auto h-8 w-8 text-gray-400" />
+                      <p className="text-xs text-gray-600">Add Media</p>
+                    </>
                   )}
-                  <p className="text-xs text-gray-600">Add Media</p>
                 </div>
               </label>
             </div>
           </div>
+          
+            <div className="space-y-2">
+              <Progress value={uploadProgress} className="h-2" />
+              <p className="text-xs text-muted-foreground">
+                {uploadStats.success} succeeded • {uploadStats.failed} failed •{" "}
+                {uploadStats.total} total
+              </p>
+            </div>
           <FormMessage>{form.formState.errors.images?.message}</FormMessage>
         </div>
 

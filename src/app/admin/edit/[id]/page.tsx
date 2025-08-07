@@ -8,7 +8,9 @@ export default async function EditCollectionPage({
 }: {
   params: { id: string };
 }) {
-  const collection = await getCollection(params.id);
+  const getParams = await params;
+
+  const collection = await getCollection(getParams.id);
 
   if (!collection) {
     notFound();

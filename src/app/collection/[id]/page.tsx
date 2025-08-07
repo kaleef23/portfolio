@@ -1,5 +1,4 @@
 import FullScreenSlider from "@/components/full-screen-slider";
-import { portfolioItems } from "@/data/portfolio-items";
 import { notFound } from "next/navigation";
 import Header from "@/components/header";
 import { getCollection } from "@/app/admin/action";

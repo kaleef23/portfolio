@@ -1,4 +1,5 @@
 // src/app/admin/layout.tsx
+import "../globals.css"
 import AuthProvider from '@/components/admin/auth-provider';
 
 export default function AdminLayout({

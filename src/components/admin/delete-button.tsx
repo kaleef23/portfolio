@@ -41,7 +41,7 @@ export default function DeleteButton({ id, action }: DeleteButtonProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <button className="w-full text-left text-red-600">Delete</button>
+        <button className="w-full text-left text-red-600 px-2 hover:bg-slate-50">Delete</button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import type { Collection, PortfolioItem } from "@/lib/types";
 import Navigation from "@/components/navigation";
@@ -11,6 +10,9 @@ import { getCollections } from "./admin/action";
 export default function Home() {
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEnterAnimationComplete, setIsEnterAnimationComplete] = useState(false);
+  const topCarouselRef = useRef<HTMLDivElement>(null);
+  const bottomCarouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -18,13 +20,12 @@ export default function Home() {
         const collections: Collection[] = await getCollections();
         const portfolioItems: PortfolioItem[] = collections.map(
           (collection) => ({
-            id: collection.id, // Use Firestore document ID
+            id: collection.id,
             artistName: 'Dele Kaleef',
             title: collection.title,
-            // description: collection.description,
             imageUrl: collection.posterImageUrl,
-            width: '180px', // or make this dynamic if needed
-            shopifyUrl: `/collection/${collection.id}`, // Link to collection page
+            width: '180px',
+            shopifyUrl: `/collection/${collection.id}`,
             category: collection.posterImageCategory || 'image',
           })
         );
@@ -39,8 +40,20 @@ export default function Home() {
     fetchCollections();
   }, []);
 
-  const topItems = items.slice(0, 24);
-  const bottomItems = items.slice(24, 48);
+  // Split items evenly between top and bottom
+  const halfLength = Math.ceil(items.length / 2);
+  const topItems = items.slice(0, halfLength);
+  const bottomItems = items.slice(halfLength);
+
+  // Handle enter animation completion
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        setIsEnterAnimationComplete(true);
+      }, 1000); // Wait 1 second after loading before starting scroll
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     return (
@@ -52,44 +65,57 @@ export default function Home() {
 
   return (
     <div className="relative h-full bg-background text-foreground overflow-hidden">
+      {/* Top Carousel */}
       <motion.div
+        ref={topCarouselRef}
         className="absolute top-0 left-0 w-full h-1/2"
         initial={{ y: "-100%" }}
         animate={{ y: "0%" }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
+        transition={{ 
+          duration: 0.8, 
+          ease: [0.16, 1, 0.3, 1] // Custom easing for smoother entry
+        }}
       >
         <PortfolioCarousel
           items={topItems}
           direction="left"
           alignment="top"
-          // onItemClick={handleItemClick}
+          shouldAnimate={isEnterAnimationComplete} // Only animate after entrance
         />
       </motion.div>
 
+      {/* Navigation */}
       <motion.div
         className="absolute top-1/2 left-0 w-full -translate-y-1/2 z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.5, ease: "easeInOut" }}
+        transition={{ 
+          duration: 0.8, 
+          delay: 0.5, 
+          ease: "easeInOut" 
+        }}
       >
         <Navigation />
       </motion.div>
 
+      {/* Bottom Carousel */}
       <motion.div
+        ref={bottomCarouselRef}
         className="absolute bottom-0 left-0 w-full h-1/2"
         initial={{ y: "100%" }}
         animate={{ y: "0%" }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
+        transition={{ 
+          duration: 0.8, 
+          ease: [0.16, 1, 0.3, 1] // Custom easing for smoother entry
+        }}
       >
         <PortfolioCarousel
-          items={bottomItems.length > 0 ? bottomItems : [...topItems].reverse()}
+          items={bottomItems}
           direction="right"
           alignment="bottom"
-          // onItemClick={handleItemClick}
+          shouldAnimate={isEnterAnimationComplete} // Only animate after entrance
         />
       </motion.div>
-      
-      
     </div>
   );
 }

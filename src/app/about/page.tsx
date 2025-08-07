@@ -18,7 +18,7 @@ export default function AboutPage() {
             </p> */}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 prose prose-lg max-w-none text-foreground/80 leading-relaxed">
+          <div className="grid grid-cols-1 md:grid-cols-3 md:gap-12 lg:gap-16 prose prose-lg max-w-none text-foreground/80 leading-relaxed">
             {/* Column 1 */}
             <div className="prose">
               <p>
