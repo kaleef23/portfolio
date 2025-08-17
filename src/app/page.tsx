@@ -1,18 +1,17 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
-import type { Collection, PortfolioItem } from "@/lib/types";
+import { useRef, useEffect, useState } from "react";
+import Image from "next/image";
+import { Collection, PortfolioItem } from "@/lib/types";
 import Navigation from "@/components/navigation";
-import PortfolioCarousel from "@/components/portfolio-carousel";
+import { useRouter } from "next/navigation";
 import { getCollections } from "./admin/action";
+
+const menuItems = ["Home", "Work", "Shop", "About", "Contact"];
 
 export default function Home() {
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isEnterAnimationComplete, setIsEnterAnimationComplete] = useState(false);
-  const topCarouselRef = useRef<HTMLDivElement>(null);
-  const bottomCarouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -21,17 +20,19 @@ export default function Home() {
         const portfolioItems: PortfolioItem[] = collections.map(
           (collection) => ({
             id: collection.id,
-            artistName: 'Dele Kaleef',
+            artistName: "Dele Kaleef",
             title: collection.title,
             imageUrl: collection.posterImageUrl,
-            width: '180px',
+            width: "180px",
             shopifyUrl: `/collection/${collection.id}`,
-            category: collection.posterImageCategory || 'image',
+            category: collection.posterImageCategory || "image",
           })
         );
+        console.log("items: ", portfolioItems);
+        
         setItems(portfolioItems);
       } catch (error) {
-        console.error('Failed to fetch collections:', error);
+        console.error("Failed to fetch collections:", error);
       } finally {
         setIsLoading(false);
       }
@@ -45,77 +46,304 @@ export default function Home() {
   const topItems = items.slice(0, halfLength);
   const bottomItems = items.slice(halfLength);
 
-  // Handle enter animation completion
-  useEffect(() => {
-    if (!isLoading) {
-      const timer = setTimeout(() => {
-        setIsEnterAnimationComplete(true);
-      }, 1000); // Wait 1 second after loading before starting scroll
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading]);
+  const topTrackRef = useRef<HTMLDivElement>(null);
+  const bottomTrackRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number>();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full bg-background">
-        <div className="text-foreground">Loading...</div>
-      </div>
-    );
-  }
+  // Dynamic content width calculation
+  const [topContentWidth, setTopContentWidth] = useState(0);
+  const [bottomContentWidth, setBottomContentWidth] = useState(0);
+
+  // Calculate content width when items load
+  useEffect(() => {
+    if (topItems.length > 0) {
+      // Assuming each item is 200px wide (as per your Image width)
+      setTopContentWidth(topItems.length * 200);
+    }
+    if (bottomItems.length > 0) {
+      setBottomContentWidth(bottomItems.length * 200);
+    }
+  }, [topItems, bottomItems]);
+
+  // Separate speed controls for each marquee
+  const topSpeed = useRef(1);
+  const bottomSpeed = useRef(1);
+  const topTargetSpeed = useRef(1.2);
+  const bottomTargetSpeed = useRef(1.2);
+
+  // Position tracking - initialize bottom to negative content width
+  const topPosition = useRef(0);
+  const bottomPosition = useRef(0);
+
+  // Initialize bottom position when content width is calculated
+  useEffect(() => {
+    if (bottomContentWidth > 0) {
+      bottomPosition.current = -bottomContentWidth;
+    }
+  }, [bottomContentWidth]);
+
+  // Drag state
+  const [topIsDragging, setTopIsDragging] = useState(false);
+  const [bottomIsDragging, setBottomIsDragging] = useState(false);
+  const topDragStart = useRef(0);
+  const bottomDragStart = useRef(0);
+  const topStartPosition = useRef(0);
+  const bottomStartPosition = useRef(0);
+
+  useEffect(() => {
+    const animate = () => {
+      if (topTrackRef.current && bottomTrackRef.current && topContentWidth > 0 && bottomContentWidth > 0) {
+        // Only animate automatically if not being dragged
+        if (!topIsDragging) {
+          topSpeed.current += (topTargetSpeed.current - topSpeed.current) * 0.1;
+          topPosition.current -= 1.2 * topSpeed.current;
+
+          // Reset position when it goes too far
+          if (topPosition.current <= -topContentWidth) {
+            topPosition.current = 0;
+          }
+        }
+
+        if (!bottomIsDragging) {
+          bottomSpeed.current +=
+            (bottomTargetSpeed.current - bottomSpeed.current) * 0.1;
+          bottomPosition.current += 1.2 * bottomSpeed.current;
+
+          // Reset position when it goes too far
+          if (bottomPosition.current >= 0) {
+            bottomPosition.current = -bottomContentWidth;
+          }
+        }
+
+        // Apply transforms
+        topTrackRef.current.style.transform = `translateX(${topPosition.current}px)`;
+        bottomTrackRef.current.style.transform = `translateX(${bottomPosition.current}px)`;
+      }
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, [topIsDragging, bottomIsDragging, topContentWidth, bottomContentWidth]);
+
+  // Hover handlers
+  const handleTopHover = (slow: boolean) => {
+    if (!topIsDragging) {
+      topTargetSpeed.current = slow ? 0.3 : 1.2;
+    }
+  };
+
+  const handleBottomHover = (slow: boolean) => {
+    if (!bottomIsDragging) {
+      bottomTargetSpeed.current = slow ? 0.3 : 1.2;
+    }
+  };
+
+  // Drag handlers for top marquee
+  const handleTopMouseDown = (e: React.MouseEvent) => {
+    setTopIsDragging(true);
+    topDragStart.current = e.clientX;
+    topStartPosition.current = topPosition.current;
+    document.body.style.cursor = "grabbing";
+    e.preventDefault();
+  };
+
+  const handleTopTouchStart = (e: React.TouchEvent) => {
+    setTopIsDragging(true);
+    topDragStart.current = e.touches[0].clientX;
+    topStartPosition.current = topPosition.current;
+    e.preventDefault();
+  };
+
+  // Drag handlers for bottom marquee
+  const handleBottomMouseDown = (e: React.MouseEvent) => {
+    setBottomIsDragging(true);
+    bottomDragStart.current = e.clientX;
+    bottomStartPosition.current = bottomPosition.current;
+    document.body.style.cursor = "grabbing";
+    e.preventDefault();
+  };
+
+  const handleBottomTouchStart = (e: React.TouchEvent) => {
+    setBottomIsDragging(true);
+    bottomDragStart.current = e.touches[0].clientX;
+    bottomStartPosition.current = bottomPosition.current;
+    e.preventDefault();
+  };
+
+  // Global mouse/touch handlers
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (topIsDragging && topContentWidth > 0) {
+        const deltaX = e.clientX - topDragStart.current;
+        topPosition.current = topStartPosition.current + deltaX;
+        // Handle wrapping
+        if (topPosition.current > 0) {
+          topPosition.current = -topContentWidth + (topPosition.current % topContentWidth);
+        } else if (topPosition.current < -topContentWidth) {
+          topPosition.current = topPosition.current % topContentWidth;
+        }
+      }
+
+      if (bottomIsDragging && bottomContentWidth > 0) {
+        const deltaX = e.clientX - bottomDragStart.current;
+        bottomPosition.current = bottomStartPosition.current + deltaX;
+        // Handle wrapping
+        if (bottomPosition.current > 0) {
+          bottomPosition.current = -bottomContentWidth + (bottomPosition.current % bottomContentWidth);
+        } else if (bottomPosition.current < -bottomContentWidth) {
+          bottomPosition.current = bottomPosition.current % bottomContentWidth;
+        }
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (topIsDragging && topContentWidth > 0) {
+        const deltaX = e.touches[0].clientX - topDragStart.current;
+        topPosition.current = topStartPosition.current + deltaX;
+        // Handle wrapping
+        if (topPosition.current > 0) {
+          topPosition.current = -topContentWidth + (topPosition.current % topContentWidth);
+        } else if (topPosition.current < -topContentWidth) {
+          topPosition.current = topPosition.current % topContentWidth;
+        }
+      }
+
+      if (bottomIsDragging && bottomContentWidth > 0) {
+        const deltaX = e.touches[0].clientX - bottomDragStart.current;
+        bottomPosition.current = bottomStartPosition.current + deltaX;
+        // Handle wrapping
+        if (bottomPosition.current > 0) {
+          bottomPosition.current = -bottomContentWidth + (bottomPosition.current % bottomContentWidth);
+        } else if (bottomPosition.current < -bottomContentWidth) {
+          bottomPosition.current = bottomPosition.current % bottomContentWidth;
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      setTopIsDragging(false);
+      setBottomIsDragging(false);
+      document.body.style.cursor = "";
+    };
+
+    const handleTouchEnd = () => {
+      setTopIsDragging(false);
+      setBottomIsDragging(false);
+    };
+
+    if (topIsDragging || bottomIsDragging) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+      document.addEventListener("touchend", handleTouchEnd);
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [topIsDragging, bottomIsDragging, topContentWidth, bottomContentWidth]);
+
+  const router = useRouter();
+  
+    const navigate = (id: string) => {
+      router.push(`/collection/${id}`);
+    };
 
   return (
-    <div className="relative h-full bg-background text-foreground overflow-hidden">
-      {/* Top Carousel */}
-      <motion.div
-        ref={topCarouselRef}
-        className="absolute top-0 left-0 w-full h-1/2"
-        initial={{ y: "-100%" }}
-        animate={{ y: "0%" }}
-        transition={{ 
-          duration: 0.8, 
-          ease: [0.16, 1, 0.3, 1] // Custom easing for smoother entry
-        }}
+    <main className="min-h-screen bg-gradient-to-br flex flex-col justify-between relative">
+      {/* Top Marquee (Left to Right) */}
+      <div
+        className="w-full fixed top-0 left-0 z-20 overflow-hidden whitespace-nowrap select-none flex items-center"
+        onMouseEnter={() => handleTopHover(true)}
+        onMouseLeave={() => handleTopHover(false)}
+        style={{ cursor: topIsDragging ? "grabbing" : "grab" }}
       >
-        <PortfolioCarousel
-          items={topItems}
-          direction="left"
-          alignment="top"
-          shouldAnimate={isEnterAnimationComplete} // Only animate after entrance
-        />
-      </motion.div>
+        <div
+          ref={topTrackRef}
+          className="inline-flex"
+          style={{ willChange: "transform" }}
+          onMouseDown={handleTopMouseDown}
+          onTouchStart={handleTopTouchStart}
+        >
+          {[...topItems, ...topItems, ...topItems].map((item, i) => (
+            <div onClick={() => navigate(item.id)} key={`top-${item.id}-${i}`} className="flex-shrink-0 cursor-pointer">
+              {item.category === "video" ? (
+                <video
+                  src={item.imageUrl}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-[200px] h-auto object-cover"
+                />
+              ) : (
+                <Image
+                  src={item.imageUrl}
+                  alt="Gallery image"
+                  width={200}
+                  height={300}
+                  className="w-[200px] h-auto object-cover"
+                  priority={i < 3}
+                  draggable={false}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
 
-      {/* Navigation */}
-      <motion.div
-        className="absolute top-1/2 left-0 w-full -translate-y-1/2 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ 
-          duration: 0.8, 
-          delay: 0.5, 
-          ease: "easeInOut" 
-        }}
-      >
-        <Navigation />
-      </motion.div>
+      {/* Center Menu */}
+      <Navigation />
 
-      {/* Bottom Carousel */}
-      <motion.div
-        ref={bottomCarouselRef}
-        className="absolute bottom-0 left-0 w-full h-1/2"
-        initial={{ y: "100%" }}
-        animate={{ y: "0%" }}
-        transition={{ 
-          duration: 0.8, 
-          ease: [0.16, 1, 0.3, 1] // Custom easing for smoother entry
-        }}
+      {/* Bottom Marquee (Right to Left) */}
+      <div
+        className="w-full fixed bottom-0 left-0 z-20 overflow-hidden whitespace-nowrap select-none flex items-end"
+        onMouseEnter={() => handleBottomHover(true)}
+        onMouseLeave={() => handleBottomHover(false)}
+        style={{ cursor: bottomIsDragging ? "grabbing" : "grab" }}
       >
-        <PortfolioCarousel
-          items={bottomItems}
-          direction="right"
-          alignment="bottom"
-          shouldAnimate={isEnterAnimationComplete} // Only animate after entrance
-        />
-      </motion.div>
-    </div>
+        <div
+          ref={bottomTrackRef}
+          className="inline-flex items-end"
+          style={{ willChange: "transform" }}
+          onMouseDown={handleBottomMouseDown}
+          onTouchStart={handleBottomTouchStart}
+        >
+          {[...bottomItems, ...bottomItems, ...bottomItems].map((item, i) => (
+            <div onClick={() => navigate(item.id)} key={`bottom-${item.id}-${i}`} className="flex-shrink-0 cursor-pointer">
+              {item.category === "video" ? (
+                <video
+                  src={item.imageUrl}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-[200px] h-auto object-cover"
+                />
+              ) : (
+                <Image
+                  src={item.imageUrl}
+                  alt="Gallery image"
+                  width={200}
+                  height={300}
+                  className="w-[200px] h-auto object-cover"
+                  priority={i < 3}
+                  draggable={false}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
   );
 }
