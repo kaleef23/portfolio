@@ -77,7 +77,7 @@ export default function PortfolioCarousel({
   const interactionStartPos = useRef({ x: 0, y: 0 });
 
   // No need for duplicated items since we're not resetting
-  const duplicatedItems = items;
+  const duplicatedItems = [...items, ...items, ...items, ...items];
   const speed = direction === "left" ? -0.04 : 0.04;
 
   useEffect(() => {
