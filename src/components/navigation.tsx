@@ -6,11 +6,11 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="flex-grow flex items-center justify-center z-30 py-4 px-4 sm:px-6 lg:px-8">
+    <div className="flex-grow flex items-center justify-center z-30 py-4 px-4 sm:px-6 lg:px-16 my-72 md:my-64">
       <div className="w-full max-w-7xl mx-auto">
         {/* Desktop Navigation */}
         <nav className="hidden md:block text-center">
-          <div className="flex flex-wrap items-center justify-between gap-2 md:gap-4">
+          <div className="flex flex-wrap items-center justify-between">
             <Button variant="link" asChild className="flex-1 min-w-[80px]">
               <Link
                 href="/works"
