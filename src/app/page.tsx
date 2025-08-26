@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { Collection, PortfolioItem } from "@/lib/types";
 import Navigation from "@/components/navigation";
@@ -8,6 +8,30 @@ import { useRouter } from "next/navigation";
 import { getCollections } from "./admin/action";
 
 const menuItems = ["Home", "Work", "Shop", "About", "Contact"];
+
+// Custom hook for time-based animation
+const useAnimationFrame = (callback: (deltaTime: number) => void) => {
+  const requestRef = useRef<number>();
+  const previousTimeRef = useRef<number>();
+
+  const animate = (time: number) => {
+    if (previousTimeRef.current !== undefined) {
+      const deltaTime = time - previousTimeRef.current;
+      callback(deltaTime);
+    }
+    previousTimeRef.current = time;
+    requestRef.current = requestAnimationFrame(animate);
+  };
+
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, [callback]);
+};
 
 export default function Home() {
   const [items, setItems] = useState<PortfolioItem[]>([]);
@@ -29,7 +53,7 @@ export default function Home() {
           })
         );
         console.log("items: ", portfolioItems);
-        
+
         setItems(portfolioItems);
       } catch (error) {
         console.error("Failed to fetch collections:", error);
@@ -41,10 +65,28 @@ export default function Home() {
     fetchCollections();
   }, []);
 
-  // Split items evenly between top and bottom
-  const halfLength = Math.ceil(items.length / 2);
-  const topItems = items.slice(0, halfLength);
-  const bottomItems = items.slice(halfLength);
+  // CORRECTED: Arrange items in true alternating pattern
+  const arrangeItemsInPattern = useCallback((allItems: PortfolioItem[]) => {
+    const topItems: PortfolioItem[] = [];
+    const bottomItems: PortfolioItem[] = [];
+
+    // Distribute items in alternating pairs to both marquees
+    for (let i = 0; i < allItems.length; i += 2) {
+      // First item of pair goes to top
+      if (allItems[i]) {
+        topItems.push(allItems[i]);
+      }
+
+      // Second item of pair goes to bottom
+      if (allItems[i + 1]) {
+        bottomItems.push(allItems[i + 1]);
+      }
+    }
+
+    return { topItems, bottomItems };
+  }, []);
+
+  const { topItems, bottomItems } = arrangeItemsInPattern(items);
 
   const topTrackRef = useRef<HTMLDivElement>(null);
   const bottomTrackRef = useRef<HTMLDivElement>(null);
@@ -90,44 +132,39 @@ export default function Home() {
   const topStartPosition = useRef(0);
   const bottomStartPosition = useRef(0);
 
-  useEffect(() => {
-    const animate = () => {
-      if (topTrackRef.current && bottomTrackRef.current && topContentWidth > 0 && bottomContentWidth > 0) {
-        // Only animate automatically if not being dragged
-        if (!topIsDragging) {
-          topSpeed.current += (topTargetSpeed.current - topSpeed.current) * 0.1;
-          topPosition.current -= 1.2 * topSpeed.current;
+  // Replace your useEffect animation loop with:
+  useAnimationFrame((deltaTime) => {
+    if (
+      topTrackRef.current &&
+      bottomTrackRef.current &&
+      topContentWidth > 0 &&
+      bottomContentWidth > 0
+    ) {
+      const normalizedDelta = deltaTime / 16.67; // Normalize to 60fps
 
-          // Reset position when it goes too far
-          if (topPosition.current <= -topContentWidth) {
-            topPosition.current = 0;
-          }
+      if (!topIsDragging) {
+        topSpeed.current += (topTargetSpeed.current - topSpeed.current) * 0.1;
+        topPosition.current -= 1.2 * topSpeed.current * normalizedDelta;
+
+        if (topPosition.current <= -topContentWidth) {
+          topPosition.current = 0;
         }
-
-        if (!bottomIsDragging) {
-          bottomSpeed.current +=
-            (bottomTargetSpeed.current - bottomSpeed.current) * 0.1;
-          bottomPosition.current += 1.2 * bottomSpeed.current;
-
-          // Reset position when it goes too far
-          if (bottomPosition.current >= 0) {
-            bottomPosition.current = -bottomContentWidth;
-          }
-        }
-
-        // Apply transforms
-        topTrackRef.current.style.transform = `translateX(${topPosition.current}px)`;
-        bottomTrackRef.current.style.transform = `translateX(${bottomPosition.current}px)`;
       }
-      animationRef.current = requestAnimationFrame(animate);
-    };
 
-    animationRef.current = requestAnimationFrame(animate);
+      if (!bottomIsDragging) {
+        bottomSpeed.current +=
+          (bottomTargetSpeed.current - bottomSpeed.current) * 0.1;
+        bottomPosition.current += 1.2 * bottomSpeed.current * normalizedDelta;
 
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
-  }, [topIsDragging, bottomIsDragging, topContentWidth, bottomContentWidth]);
+        if (bottomPosition.current >= 0) {
+          bottomPosition.current = -bottomContentWidth;
+        }
+      }
+
+      topTrackRef.current.style.transform = `translateX(${topPosition.current}px)`;
+      bottomTrackRef.current.style.transform = `translateX(${bottomPosition.current}px)`;
+    }
+  });
 
   // Hover handlers
   const handleTopHover = (slow: boolean) => {
@@ -182,7 +219,8 @@ export default function Home() {
         topPosition.current = topStartPosition.current + deltaX;
         // Handle wrapping
         if (topPosition.current > 0) {
-          topPosition.current = -topContentWidth + (topPosition.current % topContentWidth);
+          topPosition.current =
+            -topContentWidth + (topPosition.current % topContentWidth);
         } else if (topPosition.current < -topContentWidth) {
           topPosition.current = topPosition.current % topContentWidth;
         }
@@ -193,7 +231,8 @@ export default function Home() {
         bottomPosition.current = bottomStartPosition.current + deltaX;
         // Handle wrapping
         if (bottomPosition.current > 0) {
-          bottomPosition.current = -bottomContentWidth + (bottomPosition.current % bottomContentWidth);
+          bottomPosition.current =
+            -bottomContentWidth + (bottomPosition.current % bottomContentWidth);
         } else if (bottomPosition.current < -bottomContentWidth) {
           bottomPosition.current = bottomPosition.current % bottomContentWidth;
         }
@@ -206,7 +245,8 @@ export default function Home() {
         topPosition.current = topStartPosition.current + deltaX;
         // Handle wrapping
         if (topPosition.current > 0) {
-          topPosition.current = -topContentWidth + (topPosition.current % topContentWidth);
+          topPosition.current =
+            -topContentWidth + (topPosition.current % topContentWidth);
         } else if (topPosition.current < -topContentWidth) {
           topPosition.current = topPosition.current % topContentWidth;
         }
@@ -217,7 +257,8 @@ export default function Home() {
         bottomPosition.current = bottomStartPosition.current + deltaX;
         // Handle wrapping
         if (bottomPosition.current > 0) {
-          bottomPosition.current = -bottomContentWidth + (bottomPosition.current % bottomContentWidth);
+          bottomPosition.current =
+            -bottomContentWidth + (bottomPosition.current % bottomContentWidth);
         } else if (bottomPosition.current < -bottomContentWidth) {
           bottomPosition.current = bottomPosition.current % bottomContentWidth;
         }
@@ -253,10 +294,10 @@ export default function Home() {
   }, [topIsDragging, bottomIsDragging, topContentWidth, bottomContentWidth]);
 
   const router = useRouter();
-  
-    const navigate = (id: string) => {
-      router.push(`/collection/${id}`);
-    };
+
+  const navigate = (id: string) => {
+    router.push(`/collection/${id}`);
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-br flex flex-col justify-between relative">
@@ -275,16 +316,22 @@ export default function Home() {
           onTouchStart={handleTopTouchStart}
         >
           {[...topItems, ...topItems, ...topItems].map((item, i) => (
-            <div onClick={() => navigate(item.id)} key={`top-${item.id}-${i}`} className="flex-shrink-0 cursor-pointer">
+            <div
+              onClick={() => navigate(item.id)}
+              key={`top-${item.id}-${i}`}
+              className="flex-shrink-0 cursor-pointer"
+            >
               {item.category === "video" ? (
-                <video
-                  src={item.imageUrl}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-[200px] h-auto object-cover"
-                />
+                <div className="bg-black p-2">
+                  <video
+                    src={item.imageUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-[200px] h-auto object-cover"
+                  />
+                </div>
               ) : (
                 <Image
                   src={item.imageUrl}
@@ -319,16 +366,22 @@ export default function Home() {
           onTouchStart={handleBottomTouchStart}
         >
           {[...bottomItems, ...bottomItems, ...bottomItems].map((item, i) => (
-            <div onClick={() => navigate(item.id)} key={`bottom-${item.id}-${i}`} className="flex-shrink-0 cursor-pointer">
+            <div
+              onClick={() => navigate(item.id)}
+              key={`bottom-${item.id}-${i}`}
+              className="flex-shrink-0 cursor-pointer"
+            >
               {item.category === "video" ? (
-                <video
-                  src={item.imageUrl}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-[200px] h-auto object-cover"
-                />
+                <div className="bg-black p-2">
+                  <video
+                    src={item.imageUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-[200px] h-auto object-cover"
+                  />
+                </div>
               ) : (
                 <Image
                   src={item.imageUrl}
