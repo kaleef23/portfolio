@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Navigation() {
   return (
-    <div className="flex-grow flex items-center justify-center z-10">
+    <div className="flex-grow flex items-center justify-center z-30 m-64">
       <div className="w-full max-w-7xl mx-auto">
         <nav className="text-center">
           <div className="flex space-x-5 justify-center">
