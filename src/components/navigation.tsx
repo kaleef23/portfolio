@@ -6,7 +6,7 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="flex-grow flex items-center justify-center z-30 py-4 px-4 sm:px-6 lg:px-16 my-72 md:my-64">
+    <div className="flex-grow flex items-center justify-center z-30 py-4 px-4 sm:px-6 lg:px-16 mt-72 mb-96 md:my-64">
       <div className="w-full max-w-7xl mx-auto">
         {/* Desktop Navigation */}
         <nav className="hidden md:block text-center">
