@@ -52,7 +52,6 @@ export default function Home() {
             category: collection.posterImageCategory || "image",
           })
         );
-        console.log("items: ", portfolioItems);
 
         setItems(portfolioItems);
       } catch (error) {

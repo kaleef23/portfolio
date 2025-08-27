@@ -65,15 +65,14 @@ export async function getCollection(id: string): Promise<Collection | null> {
 
   if (docSnap.exists()) {
     const data = docSnap.data();
-    // Manually convert the Timestamp to a serializable format (ISO string)
     const plainData: Collection = {
       id: docSnap.id,
       title: data.title,
       description: data.description,
       posterImageUrl: data.posterImageUrl,
+      posterImageCategory: data.posterImageCategory || 'image', // Default to image
       images: data.images,
       tag: data.tag,
-      // Convert Timestamp to ISO string if it exists
       createdAt: data.createdAt?.toDate()?.toISOString() ?? new Date().toISOString(),
     };
     return plainData;
