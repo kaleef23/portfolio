@@ -354,7 +354,7 @@ export default function Home() {
               className="flex-shrink-0 cursor-pointer"
             >
               {item.category === "video" ? (
-                <div className="p-2 bg-black">
+                <div className="bg-black">
                   <video
                     src={item.imageUrl}
                     autoPlay
