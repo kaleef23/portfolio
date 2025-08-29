@@ -50,8 +50,11 @@ export default function Home() {
             width: "180px",
             shopifyUrl: `/collection/${collection.id}`,
             category: collection.posterImageCategory || "image",
+            // ADDED: Default orientation if not provided
+            orientation: collection.orientation,
           })
         );
+        console.log("items: ", portfolioItems);
 
         setItems(portfolioItems);
       } catch (error) {
@@ -64,24 +67,47 @@ export default function Home() {
     fetchCollections();
   }, []);
 
-  // CORRECTED: Arrange items in true alternating pattern
+  // MODIFIED: Arrange items in portrait-landscape alternating pattern
   const arrangeItemsInPattern = useCallback((allItems: PortfolioItem[]) => {
+    // Separate items by orientation
+    const portraitItems = allItems.filter(item => item.orientation === "portrait");
+    const landscapeItems = allItems.filter(item => item.orientation === "landscape");
+    
     const topItems: PortfolioItem[] = [];
     const bottomItems: PortfolioItem[] = [];
-
-    // Distribute items in alternating pairs to both marquees
-    for (let i = 0; i < allItems.length; i += 2) {
-      // First item of pair goes to top
-      if (allItems[i]) {
-        topItems.push(allItems[i]);
-      }
-
-      // Second item of pair goes to bottom
-      if (allItems[i + 1]) {
-        bottomItems.push(allItems[i + 1]);
+    
+    // Create alternating pattern: portrait, landscape, portrait, landscape...
+    let portraitIndex = 0;
+    let landscapeIndex = 0;
+    
+    for (let i = 0; i < allItems.length; i++) {
+      if (i % 2 === 0 && portraitIndex < portraitItems.length) {
+        // Even index: portrait
+        if (i % 4 < 2) {
+          topItems.push(portraitItems[portraitIndex]);
+        } else {
+          bottomItems.push(portraitItems[portraitIndex]);
+        }
+        portraitIndex++;
+      } else if (landscapeIndex < landscapeItems.length) {
+        // Odd index: landscape
+        if (i % 4 < 2) {
+          topItems.push(landscapeItems[landscapeIndex]);
+        } else {
+          bottomItems.push(landscapeItems[landscapeIndex]);
+        }
+        landscapeIndex++;
+      } else if (portraitIndex < portraitItems.length) {
+        // If we run out of landscape items, continue with portraits
+        if (i % 4 < 2) {
+          topItems.push(portraitItems[portraitIndex]);
+        } else {
+          bottomItems.push(portraitItems[portraitIndex]);
+        }
+        portraitIndex++;
       }
     }
-
+    
     return { topItems, bottomItems };
   }, []);
 
@@ -91,24 +117,30 @@ export default function Home() {
   const bottomTrackRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
 
-  // Dynamic content width calculation
+  // Dynamic content width calculation - MODIFIED to account for different sizes
   const [topContentWidth, setTopContentWidth] = useState(0);
   const [bottomContentWidth, setBottomContentWidth] = useState(0);
 
-  // Calculate content width when items load
+  // Calculate content width when items load - MODIFIED for different sizes
   useEffect(() => {
     if (topItems.length > 0) {
-      // Assuming each item is 200px wide (as per your Image width)
-      setTopContentWidth(topItems.length * 200);
+      const width = topItems.reduce((total, item) => {
+        return total + (item.orientation === "portrait" ? 200 : 300);
+      }, 0);
+      setTopContentWidth(width);
     }
     if (bottomItems.length > 0) {
-      setBottomContentWidth(bottomItems.length * 200);
+      const width = bottomItems.reduce((total, item) => {
+        return total + (item.orientation === "portrait" ? 200 : 300);
+      }, 0);
+      setBottomContentWidth(width);
     }
   }, [topItems, bottomItems]);
 
   // Separate speed controls for each marquee
   const topSpeed = useRef(1);
   const bottomSpeed = useRef(1);
+  
   const topTargetSpeed = useRef(1.2);
   const bottomTargetSpeed = useRef(1.2);
 
@@ -131,39 +163,40 @@ export default function Home() {
   const topStartPosition = useRef(0);
   const bottomStartPosition = useRef(0);
 
-  // Replace your useEffect animation loop with:
-  useAnimationFrame((deltaTime) => {
-    if (
-      topTrackRef.current &&
-      bottomTrackRef.current &&
-      topContentWidth > 0 &&
-      bottomContentWidth > 0
-    ) {
+  // Time-based animation callback
+  const animate = useCallback((deltaTime: number) => {
+    if (topTrackRef.current && bottomTrackRef.current && topContentWidth > 0 && bottomContentWidth > 0) {
       const normalizedDelta = deltaTime / 16.67; // Normalize to 60fps
-
+      
+      // Only animate automatically if not being dragged
       if (!topIsDragging) {
         topSpeed.current += (topTargetSpeed.current - topSpeed.current) * 0.1;
         topPosition.current -= 1.2 * topSpeed.current * normalizedDelta;
 
+        // Reset position when it goes too far
         if (topPosition.current <= -topContentWidth) {
           topPosition.current = 0;
         }
       }
 
       if (!bottomIsDragging) {
-        bottomSpeed.current +=
-          (bottomTargetSpeed.current - bottomSpeed.current) * 0.1;
+        bottomSpeed.current += (bottomTargetSpeed.current - bottomSpeed.current) * 0.1;
         bottomPosition.current += 1.2 * bottomSpeed.current * normalizedDelta;
 
+        // Reset position when it goes too far
         if (bottomPosition.current >= 0) {
           bottomPosition.current = -bottomContentWidth;
         }
       }
 
+      // Apply transforms
       topTrackRef.current.style.transform = `translateX(${topPosition.current}px)`;
       bottomTrackRef.current.style.transform = `translateX(${bottomPosition.current}px)`;
     }
-  });
+  }, [topIsDragging, bottomIsDragging, topContentWidth, bottomContentWidth]);
+
+  // Use the custom animation frame hook
+  useAnimationFrame(animate);
 
   // Hover handlers
   const handleTopHover = (slow: boolean) => {
@@ -321,23 +354,35 @@ export default function Home() {
               className="flex-shrink-0 cursor-pointer"
             >
               {item.category === "video" ? (
-                <div className="bg-black p-1">
+                <div className="p-2 bg-black">
                   <video
                     src={item.imageUrl}
                     autoPlay
                     loop
                     muted
                     playsInline
-                    className="w-[200px] h-auto object-cover"
+                    // MODIFIED: Different sizes based on orientation
+                    className={item.orientation === "portrait" 
+                      ? "w-[200px] h-[300px] object-cover" 
+                      : "w-[300px] h-[200px] object-cover"}
+                    preload="metadata"
+                    style={{
+                      border: "none !important",
+                      outline: "none !important",
+                      boxShadow: "none !important",
+                    }}
                   />
                 </div>
               ) : (
                 <Image
                   src={item.imageUrl}
                   alt="Gallery image"
-                  width={200}
-                  height={300}
-                  className="w-[200px] h-auto object-cover"
+                  // MODIFIED: Different sizes based on orientation
+                  width={item.orientation === "portrait" ? 200 : 300}
+                  height={item.orientation === "portrait" ? 300 : 200}
+                  className={item.orientation === "portrait" 
+                    ? "w-[200px] h-[300px] object-cover" 
+                    : "w-[300px] h-[200px] object-cover"}
                   priority={i < 3}
                   draggable={false}
                 />
@@ -371,23 +416,37 @@ export default function Home() {
               className="flex-shrink-0 cursor-pointer"
             >
               {item.category === "video" ? (
-                <div className="bg-black p-1">
+                <div className="bg-black">
                   <video
                     src={item.imageUrl}
                     autoPlay
                     loop
                     muted
                     playsInline
-                    className="w-[200px] h-auto object-cover"
+                    // MODIFIED: Different sizes based on orientation
+                    className={item.orientation === "portrait" 
+                      ? "w-[200px] h-[300px] object-cover" 
+                      : "w-[300px] h-[200px] object-cover"}
+                    preload="metadata"
+                    style={{
+                      transform: "translateZ(0)", // The key fix - forces GPU layer
+                      backfaceVisibility: "hidden",
+                      perspective: 1000,
+                      border: "none", // Keeps your original fix for borders
+                      outline: "none",
+                    }}
                   />
                 </div>
               ) : (
                 <Image
                   src={item.imageUrl}
                   alt="Gallery image"
-                  width={200}
-                  height={300}
-                  className="w-[200px] h-auto object-cover"
+                  // MODIFIED: Different sizes based on orientation
+                  width={item.orientation === "portrait" ? 200 : 300}
+                  height={item.orientation === "portrait" ? 300 : 200}
+                  className={item.orientation === "portrait" 
+                    ? "w-[200px] h-[300px] object-cover" 
+                    : "w-[300px] h-[200px] object-cover"}
                   priority={i < 3}
                   draggable={false}
                 />
