@@ -35,6 +35,7 @@ const formSchema = z.object({
   posterImageUrl: z.string().url("A poster image is required."),
   posterImageCategory: z.enum(["image", "video"]).optional(),
   tag: z.string().optional(),
+  orientation: z.string(),
   images: z
     .array(
       z.object({
@@ -70,6 +71,7 @@ export default function CollectionForm({
     defaultValues: {
       title: existingCollection?.title ?? "",
       tag: existingCollection?.tag,
+      orientation: existingCollection?.orientation ?? "landscape",
       posterImageUrl: existingCollection?.posterImageUrl ?? "",
       posterImageCategory: existingCollection?.posterImageCategory ?? "image",
       images: existingCollection?.images ?? [],
@@ -235,6 +237,29 @@ export default function CollectionForm({
                 <SelectContent>
                   <SelectItem value="artistic">Artistic</SelectItem>
                   <SelectItem value="commercial">Commercial</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Orientation */}
+        <FormField
+          control={form.control}
+          name="orientation"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Orientation</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select orientation" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="portrait">Portrait</SelectItem>
+                  <SelectItem value="landscape">Landscape</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

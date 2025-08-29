@@ -9,6 +9,7 @@ export interface PortfolioItem {
   width: string;
   shopifyUrl: string;
   category: 'image' | 'video';
+  orientation?: string;
 }
 
 export interface CollectionImage {
@@ -24,4 +25,5 @@ export interface Collection {
   images: CollectionImage[];
   createdAt?: string;
   tag?: string;
+  orientation?: string;
 }
