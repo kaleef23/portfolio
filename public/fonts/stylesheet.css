@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'Helvetica Neue';
-    src: url('HelveticaNeue-Black.woff2') format('woff2'),
-        url('HelveticaNeue-Black.woff') format('woff');
+    src: url('./HelveticaNeue/HelveticaNeue-Black.woff2') format('woff2'),
+        url('./HelveticaNeue/HelveticaNeue-Black.woff') format('woff');
     font-weight: 900;
     font-style: normal;
     font-display: swap;
@@ -9,10 +9,47 @@
 
 @font-face {
     font-family: 'Helvetica Neue';
-    src: url('HelveticaNeue-Light.woff2') format('woff2'),
-        url('HelveticaNeue-Light.woff') format('woff');
+    src: url('./HelveticaNeue/HelveticaNeue-Light.woff2') format('woff2'),
+        url('./HelveticaNeue/HelveticaNeue-Light.woff') format('woff');
     font-weight: 300;
     font-style: normal;
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'Josefin Sans';
+    src: url('./josefin-sans/JosefinSans-SemiBold.woff2') format('woff2'),
+        url('./josefin-sans/JosefinSans-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Josefin Sans';
+    src: url('./josefin-sans/JosefinSans-Bold.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Josefin Sans';
+    src: url('./josefin-sans/JosefinSans-Regular.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Josefin Sans';
+    src: url('./josefin-sans/JosefinSans-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* JosefinSans-Bold */
+/* 
+
+*/

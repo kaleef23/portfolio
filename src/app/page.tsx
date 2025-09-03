@@ -332,7 +332,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br flex flex-col justify-between relative">
+    <main className="min-h-screen bg-gradient-to-br flex flex-col justify-between relative font-josephin">
       {/* Top Marquee (Left to Right) */}
       <div
         className="w-full fixed top-0 left-0 z-20 overflow-hidden whitespace-nowrap select-none flex items-center"

@@ -10,9 +10,12 @@ export default {
   ],
   theme: {
     extend: {
+      // fontFamily: {
+      //   // body: ['Helvetica Neue Light', 'serif'],
+      //   // headline: ['Helvetica Neue', 'serif'],
+      // },
       fontFamily: {
-        body: ['Helvetica Neue Light', 'serif'],
-        headline: ['Helvetica Neue', 'serif'],
+        josephin: ["var(--font-josefin-sans)"],
       },
       colors: {
         background: 'hsl(var(--background))',

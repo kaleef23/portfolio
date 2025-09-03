@@ -29,7 +29,7 @@ export default function WorksPage() {
   >("default");
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background font-josephin">
       <Header />
 
       <main className="flex-grow flex items-center justify-center relative overflow-hidden px-4">

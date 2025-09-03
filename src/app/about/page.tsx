@@ -3,14 +3,14 @@ import Footer from "@/components/footer";
 
 export default function AboutPage() {
   return (
-    <div className="bg-background text-foreground font-body flex flex-col min-h-screen">
+    <div className="bg-background text-foreground font-josephin font-body flex flex-col min-h-screen">
       <header className="fixed top-0 left-0 w-full z-20 bg-white">
         <Header />
       </header>
       <main className="flex-grow pt-28 pb-10 px-4 sm:px-8 lg:px-16">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-2">
-            <h1 className="font-headline text-lg sm:text-2xl text-foreground">
+            <h1 className="font-bold text-lg sm:text-2xl text-foreground">
               About
             </h1>
             {/* <p className="mt-4 text-lg text-foreground/70 max-w-3xl mx-auto">
@@ -62,7 +62,7 @@ export default function AboutPage() {
             {/* Column 3 */}
             <div className="prose">
               <div className="mt-5">
-                <h3 className="font-headline text-lg text-primary mt-0 mb-4">
+                <h3 className="font-semibold text-lg text-primary mt-0 mb-4">
                   Selected Exhibitions
                 </h3>
                 <ul className="list-none p-0 space-y-2">

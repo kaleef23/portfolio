@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/works', label: 'Works' },
-  { href: '#', label: 'Shop' },
+  { href: 'https://kaleeflawalprints.com/', label: 'Shop' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];

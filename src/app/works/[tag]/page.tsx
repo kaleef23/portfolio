@@ -16,12 +16,12 @@ export default async function TagPage({ params }: { params: { tag: string } }) {
   const collections: Collection[] = await getCollectionsByTag(tag);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background font-josephin">
       <Header />
       <main className="flex-grow px-4 sm:px-8 lg:px-16 py-12">
         <div className="max-w-7xl mx-auto">
           <header className="text-center mb-12">
-            <h1 className="text-4xl font-headline tracking-wider capitalize">
+            <h1 className="text-4xl font-bold tracking-wider capitalize">
               {tag}
             </h1>
           </header>
