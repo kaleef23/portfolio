@@ -6,13 +6,13 @@ import Footer from "@/components/footer";
 
 export default function ContactPage() {
   return (
-    <div className="bg-background text-foreground font-body flex flex-col min-h-screen">
+    <div className="bg-background text-foreground font-body flex flex-col min-h-screen font-josephin">
       <header className="fixed top-0 left-0 w-full z-20 bg-white">
         <Header />
       </header>
       <main className="flex-grow pt-28 pb-16 px-4 sm:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-lg sm:text-3xl font-headline text-center mb-12">Get In Touch</h1>
+          <h1 className="text-lg sm:text-3xl text-center mb-12 font-bold">Get In Touch</h1>
           
           <div className="max-w-2xl mx-auto">
             <ContactForm />

@@ -30,7 +30,7 @@ export default async function SliderPage({
   }));
 
   return (
-    <div className="h-dvh w-dvw flex flex-col bg-white">
+    <div className="h-dvh w-dvw flex flex-col bg-white font-josephin">
       <header className="fixed top-0 left-0 w-full z-20">
         <Header />
       </header>
