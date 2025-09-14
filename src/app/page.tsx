@@ -6,6 +6,7 @@ import { Collection, PortfolioItem } from "@/lib/types";
 import Navigation from "@/components/navigation";
 import { useRouter } from "next/navigation";
 import { getCollections } from "./admin/action";
+import RetryImage from "@/components/retry-image";
 
 const menuItems = ["Home", "Work", "Shop", "About", "Contact"];
 
@@ -72,14 +73,14 @@ export default function Home() {
     // Separate items by orientation
     const portraitItems = allItems.filter(item => item.orientation === "portrait");
     const landscapeItems = allItems.filter(item => item.orientation === "landscape");
-    
+
     const topItems: PortfolioItem[] = [];
     const bottomItems: PortfolioItem[] = [];
-    
+
     // Create alternating pattern: portrait, landscape, portrait, landscape...
     let portraitIndex = 0;
     let landscapeIndex = 0;
-    
+
     for (let i = 0; i < allItems.length; i++) {
       if (i % 2 === 0 && portraitIndex < portraitItems.length) {
         // Even index: portrait
@@ -107,7 +108,7 @@ export default function Home() {
         portraitIndex++;
       }
     }
-    
+
     return { topItems, bottomItems };
   }, []);
 
@@ -140,7 +141,7 @@ export default function Home() {
   // Separate speed controls for each marquee
   const topSpeed = useRef(1);
   const bottomSpeed = useRef(1);
-  
+
   const topTargetSpeed = useRef(0.9);
   const bottomTargetSpeed = useRef(0.9);
 
@@ -167,7 +168,7 @@ export default function Home() {
   const animate = useCallback((deltaTime: number) => {
     if (topTrackRef.current && bottomTrackRef.current && topContentWidth > 0 && bottomContentWidth > 0) {
       const normalizedDelta = deltaTime / 16.67; // Normalize to 60fps
-      
+
       // Only animate automatically if not being dragged
       if (!topIsDragging) {
         topSpeed.current += (topTargetSpeed.current - topSpeed.current) * 0.1;
@@ -362,8 +363,8 @@ export default function Home() {
                     muted
                     playsInline
                     // MODIFIED: Different sizes based on orientation
-                    className={item.orientation === "portrait" 
-                      ? "w-[200px] h-[300px] object-cover" 
+                    className={item.orientation === "portrait"
+                      ? "w-[200px] h-[300px] object-cover"
                       : "w-[300px] h-[200px] object-cover"}
                     preload="metadata"
                     style={{
@@ -374,17 +375,30 @@ export default function Home() {
                   />
                 </div>
               ) : (
-                <Image
+                // <Image
+                //   src={item.imageUrl}
+                //   alt="Gallery image"
+                //   // MODIFIED: Different sizes based on orientation
+                //   width={item.orientation === "portrait" ? 200 : 300}
+                //   height={item.orientation === "portrait" ? 300 : 200}
+                //   className={item.orientation === "portrait"
+                //     ? "w-[200px] h-[300px] object-cover"
+                //     : "w-[300px] h-[200px] object-cover"}
+                //   priority={i < 3}
+                //   draggable={false}
+                //   />
+                  
+                  <RetryImage
                   src={item.imageUrl}
-                  alt="Gallery image"
+                  alt={`${item.title} by ${item.artistName}`}
                   // MODIFIED: Different sizes based on orientation
                   width={item.orientation === "portrait" ? 200 : 300}
                   height={item.orientation === "portrait" ? 300 : 200}
-                  className={item.orientation === "portrait" 
-                    ? "w-[200px] h-[300px] object-cover" 
+                  draggable={false}
+                  className={item.orientation === "portrait"
+                    ? "w-[200px] h-[300px] object-cover"
                     : "w-[300px] h-[200px] object-cover"}
                   priority={i < 3}
-                  draggable={false}
                 />
               )}
             </div>
@@ -424,8 +438,8 @@ export default function Home() {
                     muted
                     playsInline
                     // MODIFIED: Different sizes based on orientation
-                    className={item.orientation === "portrait" 
-                      ? "w-[200px] h-[300px] object-cover" 
+                    className={item.orientation === "portrait"
+                      ? "w-[200px] h-[300px] object-cover"
                       : "w-[300px] h-[200px] object-cover"}
                     preload="metadata"
                     style={{
@@ -438,17 +452,30 @@ export default function Home() {
                   />
                 </div>
               ) : (
-                <Image
+                // <Image
+                //   src={item.imageUrl}
+                //   alt="Gallery image"
+                //   // MODIFIED: Different sizes based on orientation
+                //   width={item.orientation === "portrait" ? 200 : 300}
+                //   height={item.orientation === "portrait" ? 300 : 200}
+                //   className={item.orientation === "portrait" 
+                //     ? "w-[200px] h-[300px] object-cover" 
+                //     : "w-[300px] h-[200px] object-cover"}
+                //   priority={i < 3}
+                //   draggable={false}
+                //   />
+
+                <RetryImage
                   src={item.imageUrl}
-                  alt="Gallery image"
+                  alt={`${item.title} by ${item.artistName}`}
                   // MODIFIED: Different sizes based on orientation
                   width={item.orientation === "portrait" ? 200 : 300}
                   height={item.orientation === "portrait" ? 300 : 200}
-                  className={item.orientation === "portrait" 
-                    ? "w-[200px] h-[300px] object-cover" 
+                  draggable={false}
+                  className={item.orientation === "portrait"
+                    ? "w-[200px] h-[300px] object-cover"
                     : "w-[300px] h-[200px] object-cover"}
                   priority={i < 3}
-                  draggable={false}
                 />
               )}
             </div>

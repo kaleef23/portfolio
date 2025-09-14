@@ -12,12 +12,12 @@
 }
 
 @font-face {
-    font-family: 'Helvetica Neue Light';
-    src: url('/fonts/HelveticaNeue-Light.woff2') format('woff2'),
-        url('/fonts/HelveticaNeue-Light.woff') format('woff');
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
+  font-family: 'Helvetica Neue Light';
+  src: url('/fonts/HelveticaNeue-Light.woff2') format('woff2'),
+    url('/fonts/HelveticaNeue-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
 }
 
 @layer base {
@@ -68,21 +68,31 @@
 }
 
 @layer base {
+
   html,
   body,
   #__next {
     @apply h-full;
   }
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
+  html,
+  body {
+    overscroll-behavior-x: none;
+  }
+
   @keyframes scroll-left {
     from {
       transform: translateX(0);
     }
+
     to {
       transform: translateX(-50%);
     }
@@ -92,6 +102,7 @@
     from {
       transform: translateX(-50%);
     }
+
     to {
       transform: translateX(0);
     }
