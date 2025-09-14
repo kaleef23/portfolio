@@ -2,6 +2,7 @@
 import { getCollectionsByTag } from "@/app/admin/action";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import RetryImage from "@/components/retry-image";
 import { Collection } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,7 +46,7 @@ export default async function TagPage({ params }: { params: { tag: string } }) {
                         playsInline
                       />
                     ) : (
-                      <Image
+                      <RetryImage
                         src={collection.posterImageUrl}
                         alt={collection.title}
                         width={500}
