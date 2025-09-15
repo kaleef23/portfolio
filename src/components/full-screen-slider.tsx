@@ -30,6 +30,7 @@ const SliderItem = ({ item }: { item: PortfolioItem }) => {
           width={1000}
           height={1000}
           className={`w-auto object-contain ${isPortrait ? "h-screen object-contain" : "max-h-[80%]"}`}
+          quality={90}
           onLoadingComplete={(img) => {
             setIsPortrait(img.naturalHeight > img.naturalWidth);
           }}

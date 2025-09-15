@@ -59,6 +59,7 @@ export default function RetryImage({
                 src={currentSrc}
                 alt={alt}
                 className={`${className} ${loading ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}
+                quality={90}
                 onLoadingComplete={(img) => {
                     setLoading(false);
                     // const isPortraitValue = img.naturalHeight > img.naturalWidth;
