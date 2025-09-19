@@ -16,7 +16,7 @@ export default async function AboutPage() {
       <main className="flex-grow pt-28 pb-10 px-4 sm:px-8 lg:px-16">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-2">
-            <h1 className="font-bold text-lg sm:text-2xl text-foreground">
+            <h1 className="text-lg sm:text-3xl text-center mb-12 font-bold text-foreground">
               About
             </h1>
           </div>
