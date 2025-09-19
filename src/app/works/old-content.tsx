@@ -1,23 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { SiteContent, WorksImages } from "@/lib/types";
-import { getSiteContent, getWorksImages } from "../admin/action";
 
-const imageHints = {
-  default: "abstract texture",
-  artistic: "artistic portrait",
-  commercial: "product photography",
-};
-
-// Fallback images in case of errors
-const fallbackImages = {
+const images = {
   default:
     process.env.NEXT_PUBLIC_DEFAULT_URL ?? "https://cdn.pixabay.com/photo/2023/06/27/10/51/pier-8091934_960_720.jpg",
   artistic:
@@ -26,86 +17,20 @@ const fallbackImages = {
     process.env.NEXT_PUBLIC_COMMERCIAL_URL ?? "https://ik.imagekit.io/qlc53zzxb/kaleef-lawal/schlau%20x%20kaleef%2032.jpg?updatedAt=1752041052497",
 };
 
+const imageHints = {
+  default: "abstract texture",
+  artistic: "artistic portrait",
+  commercial: "product photography",
+};
+
 export default function WorksPage() {
-  const [images, setImages] = useState<WorksImages['images']>(fallbackImages);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let timeoutId: any;
-
-    async function fetchContent() {
-      setIsLoading(true);
-      setError(null);
-      try {
-        console.log("Fetching works images...");
-        const worksImages = await getWorksImages();
-        console.log("works images received:", worksImages);
-
-        if (worksImages && worksImages.images) {
-          setImages(worksImages.images);
-        } else {
-          console.warn("No works data found, using fallback images");
-          setImages(fallbackImages);
-        }
-      } catch (error) {
-        console.error("Failed to fetch content:", error);
-        setError("Failed to load content. Using default images.");
-        setImages(fallbackImages);
-      } finally {
-        // take extra 1/3 secs to display page
-        timeoutId = setTimeout(() => {
-          setIsLoading(false)
-        }, 2000);
-      }
-
-      // Clean up timeout if component unmounts
-      return () => clearTimeout(timeoutId);
-    }
-
-    fetchContent();
-  }, []);
-
   const [activeCategory, setActiveCategory] = useState<
     "default" | "artistic" | "commercial"
   >("default");
 
-  // Show loading state while images are being fetched
-  if (isLoading) {
-    return (
-      <div className="flex flex-col min-h-screen bg-background font-josephin"
-        style={{
-          background: "linear-gradient(135deg, #2c3e50, #4ca1af)",
-          backgroundSize: "400% 400%",
-          animation: "gradientShift 15s ease infinite"
-        }}
-      >
-        <Header />
-        <main className="flex-grow flex items-center justify-center">
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
-            <div className="w-12 h-12 rounded-full border-4 border-gray-300 border-t-transparent animate-spin"></div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col min-h-screen bg-background font-josephin"
-      style={{
-        background: "linear-gradient(135deg, #2c3e50, #4ca1af)",
-        backgroundSize: "400% 400%",
-        animation: "gradientShift 15s ease infinite"
-      }}
-    >
+    <div className="flex flex-col min-h-screen bg-background font-josephin">
       <Header />
-
-      {error && (
-        <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50">
-          {error}
-        </div>
-      )}
 
       <main className="flex-grow flex items-center justify-center relative overflow-hidden px-4">
         <AnimatePresence>
