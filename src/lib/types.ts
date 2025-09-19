@@ -27,3 +27,25 @@ export interface Collection {
   tag?: string;
   orientation?: string;
 }
+
+export interface SiteContent {
+  about: {
+    col1: {
+      paragraph1: string;
+      paragraph2: string;
+    };
+    col2: {
+      paragraph1: string;
+      paragraph2: string;
+    };
+    exhibitions: string; // Storing as a single string, split by newline
+  };
+}
+
+export interface WorksImages {
+  images: {
+    default: string;
+    artistic: string;
+    commercial: string;
+  };
+}

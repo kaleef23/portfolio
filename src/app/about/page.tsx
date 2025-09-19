@@ -1,7 +1,13 @@
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { getSiteContent } from "../admin/action";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+
+  const siteContent = await getSiteContent();
+  const { about } = siteContent;
+  const exhibitionsList = about.exhibitions.split('\n').filter(Boolean);
+
   return (
     <div className="bg-background text-foreground font-josephin font-body flex flex-col min-h-screen">
       <header className="fixed top-0 left-0 w-full z-20 bg-white">
@@ -13,51 +19,21 @@ export default function AboutPage() {
             <h1 className="font-bold text-lg sm:text-2xl text-foreground">
               About
             </h1>
-            {/* <p className="mt-4 text-lg text-foreground/70 max-w-3xl mx-auto">
-              Exploring the intersections of identity, culture, and the human condition through the art of photography.
-            </p> */}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 md:gap-12 lg:gap-16 prose prose-lg max-w-none text-foreground/80 leading-relaxed">
             {/* Column 1 */}
             <div className="prose">
-              <p>
-                Kaleef Lawal is a Nigerian-born visual artist and photographer
-                based in Berlin. His work explores the intersections of
-                identity, tradition, and contemporary expression, drawing from a
-                deep-rooted passion for storytelling. For over eight years,
-                Kaleef has utilized light, form, and emotion to create images
-                that convey meaning beyond words
-              </p>
-              <p>
-                He holds a Certificate in Photography from the Africa Digital
-                Media Institute in Nairobi and a BA in Photography from the
-                University of Europe for Applied Sciences in Berlin. In 2022,
-                Kaleef completed a six-month internship with renowned Dutch
-                photographer Erwin Olaf at his Amsterdam studio—an experience
-                that deeply influenced his approach to conceptual and staged
-                photography
-              </p>
+              <p dangerouslySetInnerHTML={{ __html: about.col1.paragraph1.replace(/\n/g, '<br />') }} />
+              <p dangerouslySetInnerHTML={{ __html: about.col1.paragraph2.replace(/\n/g, '<br />') }} />
             </div>
 
             {/* Column 2 */}
             <div className="prose">
-              <p>
-                His work spans portraiture, fashion, and conceptual projects,
-                often centered around themes of cultural heritage, mental
-                health, and belonging. Whether capturing the bold lines of a
-                {"dancer’s "} body or the symbolic power of traditional objects,{" "}
-                {"Kaleef’s "} photographs invite viewers to pause, reflect, and
-                reconnect with themselves and with culture.
-              </p>
-              <p>
-                {"Kaleef’s "} images have been exhibited internationally and
-                recognized with several awards, including the 1st Prize at The
-                Art Report Africa Prize (2023), the {"People’s "} Choice Award
-                at the BBA Photography Prize (2022), and the MPB European Award
-                (2022).
-              </p>
+              <p dangerouslySetInnerHTML={{ __html: about.col2.paragraph1.replace(/\n/g, '<br />') }} />
+              <p dangerouslySetInnerHTML={{ __html: about.col2.paragraph2.replace(/\n/g, '<br />') }} />
             </div>
+
 
             {/* Column 3 */}
             <div className="prose">
@@ -66,22 +42,9 @@ export default function AboutPage() {
                   Selected Exhibitions
                 </h3>
                 <ul className="list-none p-0 space-y-2">
-                  <li>
-                    2023 - Die Brücke Art Jam, Group show, Berlin Art Week,
-                    Berlin, Germany
-                  </li>
-                  <li>
-                    2022 - BBA photography prize, Group Show, BBA gallery,
-                    Berlin, Germany
-                  </li>
-                  <li>
-                    2021 - NFT week, Group show, Door Door Gallery, New York,
-                    USA
-                  </li>
-                  <li>
-                    2021 - Portrait Show, Group show, Through the Lens
-                    Collective Gallery, Johannesburg, South Africa
-                  </li>
+                  {exhibitionsList.map((item, index) => (
+                    <li key={index}>{item}</li>
+                  ))}
                 </ul>
               </div>
               <div>

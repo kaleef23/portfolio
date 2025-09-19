@@ -452,19 +452,6 @@ export default function Home() {
                   />
                 </div>
               ) : (
-                // <Image
-                //   src={item.imageUrl}
-                //   alt="Gallery image"
-                //   // MODIFIED: Different sizes based on orientation
-                //   width={item.orientation === "portrait" ? 200 : 300}
-                //   height={item.orientation === "portrait" ? 300 : 200}
-                //   className={item.orientation === "portrait" 
-                //     ? "w-[200px] h-[300px] object-cover" 
-                //     : "w-[300px] h-[200px] object-cover"}
-                //   priority={i < 3}
-                //   draggable={false}
-                //   />
-
                 <RetryImage
                   src={item.imageUrl}
                   alt={`${item.title} by ${item.artistName}`}
