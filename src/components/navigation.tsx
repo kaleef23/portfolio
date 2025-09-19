@@ -16,6 +16,8 @@ export default function Navigation() {
         <Button variant="link" asChild>
           <Link
             href="https://kaleeflawalprints.com/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-[2px] sm:text-base md:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
           >
             Shop
