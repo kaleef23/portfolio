@@ -56,7 +56,7 @@ export default function WorksPage() {
         // take extra 1/3 secs to display page
         timeoutId = setTimeout(() => {
           setIsLoading(false)
-        }, 2000);
+        }, 500);
       }
 
       // Clean up timeout if component unmounts
@@ -74,19 +74,17 @@ export default function WorksPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col min-h-screen bg-background font-josephin"
-        style={{
-          background: "linear-gradient(135deg, #2c3e50, #4ca1af)",
-          backgroundSize: "400% 400%",
-          animation: "gradientShift 15s ease infinite"
-        }}
+        // style={{
+        //   background: "linear-gradient(135deg, #2c3e50, #4ca1af)",
+        //   backgroundSize: "400% 400%",
+        //   animation: "gradientShift 15s ease infinite"
+        // }}
       >
-        <Header />
         <main className="flex-grow flex items-center justify-center">
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
-            <div className="w-12 h-12 rounded-full border-4 border-gray-300 border-t-transparent animate-spin"></div>
+          <div className="text-xs sm:text-3xl font-bold font-headline tracking-widest text-center animate-pulse">
+            <span>KALEEF LAWAL</span>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
