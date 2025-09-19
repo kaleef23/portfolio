@@ -10,12 +10,12 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/works', label: 'Works' },
-  { href: 'https://kaleeflawalprints.com/', label: 'Shop' },
+  { href: 'https://kaleeflawalprints.com/', label: 'Shop', external: true },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
 
-const NavLink = ({ href, label, className }: { href: string; label: string; className?: string }) => {
+const NavLink = ({ href, label, className, external }: { href: string; label: string; className?: string, external?: boolean }) => {
   const pathname = usePathname();
   const isActive = pathname === href;
 
@@ -28,6 +28,10 @@ const NavLink = ({ href, label, className }: { href: string; label: string; clas
           isActive && "text-foreground font-bold underline underline-offset-4",
           className
         )}
+        {...(external && {
+          target: "_blank",
+          rel: "noopener noreferrer"
+        })}
       >
         {label}
       </Link>
@@ -47,7 +51,7 @@ export default function Header() {
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center gap-4">
         {navItems.map((item) => (
-          <NavLink key={item.href} href={item.href} label={item.label} />
+          <NavLink key={item.href} href={item.href} label={item.label} external={item.external ?? false} />
         ))}
       </nav>
 
@@ -78,6 +82,7 @@ export default function Header() {
                     key={item.href}
                     href={item.href}
                     label={item.label}
+                    external={item.external ?? false}
                     className="text-2xl"
                   />
                 ))}
