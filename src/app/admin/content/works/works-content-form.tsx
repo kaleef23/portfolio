@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { WorksImages } from '@/lib/types';
 import { updateWorksImages } from '@/app/admin/action';
 import { Loader2, UploadCloud } from 'lucide-react';
+import { uploadToFirebase } from '@/lib/firebaseUpload';
 
 const formSchema = z.object({
     images: z.object({
@@ -73,13 +74,16 @@ export default function WorksContentForm({
         formData.append('file', file);
 
         try {
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            });
 
-            if (!response.ok) throw new Error('Upload failed');
-            const { url } = await response.json();
+            const {url } = await uploadToFirebase(file);
+
+            // const response = await fetch('/api/upload', {
+            //     method: 'POST',
+            //     body: formData,
+            // });
+
+            // if (!response.ok) throw new Error('Upload failed');
+            // const { url } = await response.json();
 
             form.setValue(`images.${type}`, url, { shouldValidate: true });
             setFeedback({
