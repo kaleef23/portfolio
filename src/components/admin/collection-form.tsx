@@ -29,6 +29,7 @@ import { addCollection, updateCollection } from "@/app/admin/action";
 import { X, UploadCloud, Loader2 } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Progress } from "../ui/progress";
+import { uploadToFirebase } from "@/lib/firebaseUpload";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters."),
@@ -90,17 +91,26 @@ export default function CollectionForm({
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error("Upload failed");
+    try {
+      const result = await uploadToFirebase(file);
+      // result contains { url: string, category: 'image' | 'video' }
+      return result;
+    } catch (error) {
+      console.error('Upload failed:', error);
+      throw error;
     }
 
-    const { url, category } = await response.json();
-    return { url, category };
+    // const response = await fetch("/api/upload", {
+    //   method: "POST",
+    //   body: formData,
+    // });
+
+    // if (!response.ok) {
+    //   throw new Error("Upload failed");
+    // }
+
+    // const { url, category } = await response.json();
+    // return { url, category };
   };
 
   const handlePosterUpload = async (file: File) => {
