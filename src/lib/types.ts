@@ -14,6 +14,7 @@ export interface PortfolioItem {
 
 export interface CollectionImage {
   url: string;
+  category: 'image' | 'video';
 }
 
 export interface Collection {

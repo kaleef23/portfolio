@@ -71,6 +71,7 @@ export async function getCollection(id: string): Promise<Collection | null> {
       title: data.title,
       description: data.description,
       posterImageUrl: data.posterImageUrl,
+      orientation: data.orientation,
       posterImageCategory: data.posterImageCategory || 'image', // Default to image
       images: data.images,
       tag: data.tag,
