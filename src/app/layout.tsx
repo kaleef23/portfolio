@@ -1,6 +1,7 @@
 "use client"
 
 import { Josefin_Sans } from 'next/font/google';
+import { Analytics } from "@vercel/analytics/next"
 
 export const josefinSans = Josefin_Sans({
   subsets: ['latin'],
@@ -39,6 +40,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <PageTransition pageKey={pathname}>{children}</PageTransition>
+        <Analytics />
       </body>
     </html>
   );
