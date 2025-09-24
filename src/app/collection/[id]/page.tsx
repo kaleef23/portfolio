@@ -17,6 +17,9 @@ export default async function SliderPage({
     notFound();
   }
 
+  console.log(collection);
+  
+
   // Adapt collection images to PortfolioItem[]
   const sliderItems: PortfolioItem[] = collection.images.map((img, index) => ({
     id: `${collection.id}-${index}`,
@@ -24,7 +27,7 @@ export default async function SliderPage({
     artistName: 'Dele Kaleef',
     // description: collection.description,
     imageUrl: img.url,
-    category: 'image', // Assuming all are images for now
+    category: img.category || 'image',
     shopifyUrl: '#',
     width: 'auto',
   }));
