@@ -10,11 +10,12 @@ export interface PortfolioItem {
   shopifyUrl: string;
   category: 'image' | 'video';
   orientation?: string;
+  position?: string;
 }
 
 export interface CollectionImage {
   url: string;
-  category: 'image' | 'video';
+  category?: 'image' | 'video';
 }
 
 export interface Collection {
@@ -27,6 +28,7 @@ export interface Collection {
   createdAt?: string;
   tag?: string;
   orientation?: string;
+  position?: string;
 }
 
 export interface SiteContent {

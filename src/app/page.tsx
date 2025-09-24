@@ -53,9 +53,10 @@ export default function Home() {
             category: collection.posterImageCategory || "image",
             // ADDED: Default orientation if not provided
             orientation: collection.orientation,
+            position: collection.position || "top",
           })
         );
-        console.log("items: ", portfolioItems);
+        console.log("items: ", portfolioItems); // delete this!!!!!!
 
         setItems(portfolioItems);
       } catch (error) {
@@ -74,40 +75,40 @@ export default function Home() {
     const portraitItems = allItems.filter(item => item.orientation === "portrait");
     const landscapeItems = allItems.filter(item => item.orientation === "landscape");
 
-    const topItems: PortfolioItem[] = [];
-    const bottomItems: PortfolioItem[] = [];
+    const topItems = allItems.filter(item => item.position === "top");
+    const bottomItems = allItems.filter(item => item.position === "bottom");
 
     // Create alternating pattern: portrait, landscape, portrait, landscape...
-    let portraitIndex = 0;
-    let landscapeIndex = 0;
+    // let portraitIndex = 0;
+    // let landscapeIndex = 0;
 
-    for (let i = 0; i < allItems.length; i++) {
-      if (i % 2 === 0 && portraitIndex < portraitItems.length) {
-        // Even index: portrait
-        if (i % 4 < 2) {
-          topItems.push(portraitItems[portraitIndex]);
-        } else {
-          bottomItems.push(portraitItems[portraitIndex]);
-        }
-        portraitIndex++;
-      } else if (landscapeIndex < landscapeItems.length) {
-        // Odd index: landscape
-        if (i % 4 < 2) {
-          topItems.push(landscapeItems[landscapeIndex]);
-        } else {
-          bottomItems.push(landscapeItems[landscapeIndex]);
-        }
-        landscapeIndex++;
-      } else if (portraitIndex < portraitItems.length) {
-        // If we run out of landscape items, continue with portraits
-        if (i % 4 < 2) {
-          topItems.push(portraitItems[portraitIndex]);
-        } else {
-          bottomItems.push(portraitItems[portraitIndex]);
-        }
-        portraitIndex++;
-      }
-    }
+    // for (let i = 0; i < allItems.length; i++) {
+    //   if (i % 2 === 0 && portraitIndex < portraitItems.length) {
+    //     // Even index: portrait
+    //     if (i % 4 < 2) {
+    //       topItems.push(portraitItems[portraitIndex]);
+    //     } else {
+    //       bottomItems.push(portraitItems[portraitIndex]);
+    //     }
+    //     portraitIndex++;
+    //   } else if (landscapeIndex < landscapeItems.length) {
+    //     // Odd index: landscape
+    //     if (i % 4 < 2) {
+    //       topItems.push(landscapeItems[landscapeIndex]);
+    //     } else {
+    //       bottomItems.push(landscapeItems[landscapeIndex]);
+    //     }
+    //     landscapeIndex++;
+    //   } else if (portraitIndex < portraitItems.length) {
+    //     // If we run out of landscape items, continue with portraits
+    //     if (i % 4 < 2) {
+    //       topItems.push(portraitItems[portraitIndex]);
+    //     } else {
+    //       bottomItems.push(portraitItems[portraitIndex]);
+    //     }
+    //     portraitIndex++;
+    //   }
+    // }
 
     return { topItems, bottomItems };
   }, []);

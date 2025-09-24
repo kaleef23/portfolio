@@ -48,6 +48,7 @@ export default async function AdminDashboard() {
                   <TableHead>Title</TableHead>
                   <TableHead>Tag</TableHead>
                   <TableHead>Orient.</TableHead>
+                  <TableHead>Position</TableHead>
                   <TableHead>Image Count</TableHead>
                   <TableHead>Created At</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -82,6 +83,9 @@ export default async function AdminDashboard() {
                       </TableCell>
                       <TableCell className="font-medium">
                         {collection.orientation}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {collection.position}
                       </TableCell>
                       <TableCell>{collection.images.length}</TableCell>
                       <TableCell>
