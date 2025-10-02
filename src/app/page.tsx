@@ -78,38 +78,6 @@ export default function Home() {
     const topItems = allItems.filter(item => item.position === "top");
     const bottomItems = allItems.filter(item => item.position === "bottom");
 
-    // Create alternating pattern: portrait, landscape, portrait, landscape...
-    // let portraitIndex = 0;
-    // let landscapeIndex = 0;
-
-    // for (let i = 0; i < allItems.length; i++) {
-    //   if (i % 2 === 0 && portraitIndex < portraitItems.length) {
-    //     // Even index: portrait
-    //     if (i % 4 < 2) {
-    //       topItems.push(portraitItems[portraitIndex]);
-    //     } else {
-    //       bottomItems.push(portraitItems[portraitIndex]);
-    //     }
-    //     portraitIndex++;
-    //   } else if (landscapeIndex < landscapeItems.length) {
-    //     // Odd index: landscape
-    //     if (i % 4 < 2) {
-    //       topItems.push(landscapeItems[landscapeIndex]);
-    //     } else {
-    //       bottomItems.push(landscapeItems[landscapeIndex]);
-    //     }
-    //     landscapeIndex++;
-    //   } else if (portraitIndex < portraitItems.length) {
-    //     // If we run out of landscape items, continue with portraits
-    //     if (i % 4 < 2) {
-    //       topItems.push(portraitItems[portraitIndex]);
-    //     } else {
-    //       bottomItems.push(portraitItems[portraitIndex]);
-    //     }
-    //     portraitIndex++;
-    //   }
-    // }
-
     return { topItems, bottomItems };
   }, []);
 
@@ -139,12 +107,14 @@ export default function Home() {
     }
   }, [topItems, bottomItems]);
 
+  const speed = 0.5;
+
   // Separate speed controls for each marquee
   const topSpeed = useRef(1);
   const bottomSpeed = useRef(1);
 
-  const topTargetSpeed = useRef(0.9);
-  const bottomTargetSpeed = useRef(0.9);
+  const topTargetSpeed = useRef(speed);
+  const bottomTargetSpeed = useRef(speed);
 
   // Position tracking - initialize bottom to negative content width
   const topPosition = useRef(0);
@@ -173,7 +143,7 @@ export default function Home() {
       // Only animate automatically if not being dragged
       if (!topIsDragging) {
         topSpeed.current += (topTargetSpeed.current - topSpeed.current) * 0.1;
-        topPosition.current -= 0.9 * topSpeed.current * normalizedDelta;
+        topPosition.current -= speed * topSpeed.current * normalizedDelta;
 
         // Reset position when it goes too far
         if (topPosition.current <= -topContentWidth) {
@@ -183,7 +153,7 @@ export default function Home() {
 
       if (!bottomIsDragging) {
         bottomSpeed.current += (bottomTargetSpeed.current - bottomSpeed.current) * 0.1;
-        bottomPosition.current += 0.9 * bottomSpeed.current * normalizedDelta;
+        bottomPosition.current += speed * bottomSpeed.current * normalizedDelta;
 
         // Reset position when it goes too far
         if (bottomPosition.current >= 0) {
@@ -203,13 +173,13 @@ export default function Home() {
   // Hover handlers
   const handleTopHover = (slow: boolean) => {
     if (!topIsDragging) {
-      topTargetSpeed.current = slow ? 0.3 : 0.9;
+      topTargetSpeed.current = slow ? 0.3 : speed;
     }
   };
 
   const handleBottomHover = (slow: boolean) => {
     if (!bottomIsDragging) {
-      bottomTargetSpeed.current = slow ? 0.3 : 0.9;
+      bottomTargetSpeed.current = slow ? 0.3 : speed;
     }
   };
 
