@@ -1,21 +1,36 @@
 "use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: '/works', label: 'Works' },
-  { href: 'https://kaleeflawalprints.com/', label: 'Shop', external: true },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+  { href: "/works/artistic", label: "Works" },
+  { href: "https://kaleeflawalprints.com/", label: "Shop", external: true },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
-const NavLink = ({ href, label, className, external }: { href: string; label: string; className?: string, external?: boolean }) => {
+const NavLink = ({
+  href,
+  label,
+  className,
+  external,
+}: {
+  href: string;
+  label: string;
+  className?: string;
+  external?: boolean;
+}) => {
   const pathname = usePathname();
   const isActive = pathname === href;
 
@@ -30,7 +45,7 @@ const NavLink = ({ href, label, className, external }: { href: string; label: st
         )}
         {...(external && {
           target: "_blank",
-          rel: "noopener noreferrer"
+          rel: "noopener noreferrer",
         })}
       >
         {label}
@@ -51,7 +66,12 @@ export default function Header() {
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center gap-4">
         {navItems.map((item) => (
-          <NavLink key={item.href} href={item.href} label={item.label} external={item.external ?? false} />
+          <NavLink
+            key={item.href}
+            href={item.href}
+            label={item.label}
+            external={item.external ?? false}
+          />
         ))}
       </nav>
 
@@ -69,7 +89,9 @@ export default function Header() {
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center p-4 border-b">
                 <div className="text-[8px] sm:text-lg font-bold font-headline tracking-widest">
-                  <Link href="/" onClick={() => setIsOpen(false)}>KALEEF LAWAL</Link>
+                  <Link href="/" onClick={() => setIsOpen(false)}>
+                    KALEEF LAWAL
+                  </Link>
                 </div>
                 {/* <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
                   <X className="h-6 w-6" />
