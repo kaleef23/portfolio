@@ -7,7 +7,7 @@ export default function Navigation() {
       <nav className="w-full sm:px-8 lg:px-56 md:space-x-8 py-2 flex justify-around items-center h-20 bg-transparent pointer-events-auto">
         <Button variant="link" asChild>
           <Link
-            href="/works"
+            href="/works/artistic"
             className="text-[2px] sm:text-base md:text-lg text-foreground/80 hover:text-foreground font-headline uppercase tracking-wider"
           >
             Works
